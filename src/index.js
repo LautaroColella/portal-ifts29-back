@@ -1,0 +1,28 @@
+require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
+
+const AppDataSource = require("./config/data-source");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+const PORT = process.env.SERVER_PORT || 3000;
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log("Database connected");
+
+    if (process.env.DEBUG === "true") console.log("---DEBUG MODE---");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database initialization failed");
+    console.error(err);
+  });
