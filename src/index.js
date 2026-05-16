@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const AppDataSource = require("./config/data-source");
 const ticketRoutes = require("./routes/ticketRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 const PORT = process.env.SERVER_PORT || 3000;
 
