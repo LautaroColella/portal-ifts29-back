@@ -3,6 +3,7 @@ const { validatePagination } = require("../validators/paginationValidator");
 const {
   validateTicketFilters,
 } = require("../validators/ticketFiltersValidator");
+const { validateCreateTicket } = require("../validators/createTicketValidator");
 
 const getAllTickets = async ({ page, limit, title }) => {
   const validatedPagination = validatePagination(page, limit);
@@ -14,6 +15,13 @@ const getAllTickets = async ({ page, limit, title }) => {
   });
 };
 
+const createTicket = async (ticketData) => {
+  const validatedTicket = validateCreateTicket(ticketData);
+
+  return await ticketRepository.create(validatedTicket);
+};
+
 module.exports = {
   getAllTickets,
+  createTicket,
 };
