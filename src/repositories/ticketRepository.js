@@ -30,6 +30,17 @@ const findAll = async (filters) => {
   };
 };
 
+const create = async (ticketData) => {
+  const ticketRepository = getRepository();
+
+  const ticket = ticketRepository.create({
+    ...ticketData,
+  });
+
+  return await ticketRepository.save(ticket);
+};
+
 module.exports = {
   findAll,
+  create,
 };
