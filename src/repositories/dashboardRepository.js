@@ -191,7 +191,7 @@ const getTopResolversByClosedTickets = async (filters) => {
     .addSelect("COUNT(ticket.id)", "closedTickets")
     .where("ticket.status = :status", { status: "CLOSED" })
     .groupBy("assignedTo.id")
-    .orderBy("closedTickets", "DESC")
+    .orderBy("COUNT(ticket.id)", "DESC")
     .limit(5);
 
   applyDateFilters(query, filters);
