@@ -1,3 +1,5 @@
+const ValidationError = require("../errors/ValidationError");
+
 /**
  * Validates and sanitizes a ticket ID.
  *
@@ -12,11 +14,11 @@
  */
 const validateTicketId = (id) => {
   if (!id) {
-    throw new Error("El identificador del ticket es requerido");
+    throw new ValidationError("El identificador del ticket es requerido");
   }
 
   if (!/^\d+$/.test(id)) {
-    throw new Error(
+    throw new ValidationError(
       "El identificador del ticket debe ser un número entero positivo",
     );
   }
@@ -24,11 +26,13 @@ const validateTicketId = (id) => {
   const parsedId = Number(id);
 
   if (!Number.isSafeInteger(parsedId)) {
-    throw new Error("El identificador del ticket es demasiado grande");
+    throw new ValidationError(
+      "El identificador del ticket es demasiado grande",
+    );
   }
 
   if (parsedId <= 0) {
-    throw new Error("El identificador del ticket debe ser mayor a 0");
+    throw new ValidationError("El identificador del ticket debe ser mayor a 0");
   }
 
   return parsedId;

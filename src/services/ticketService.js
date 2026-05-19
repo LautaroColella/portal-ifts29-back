@@ -5,6 +5,7 @@ const {
 } = require("../validators/ticketFiltersValidator");
 const { validateCreateTicket } = require("../validators/createTicketValidator");
 const { validateTicketId } = require("../validators/ticketIdValidator");
+const NotFoundError = require("../errors/NotFoundError");
 
 const getAllTickets = async ({ page, limit, title }) => {
   const validatedPagination = validatePagination(page, limit);
@@ -22,7 +23,7 @@ const getTicketById = async (id) => {
   const ticket = await ticketRepository.findById(validatedId);
 
   if (!ticket) {
-    throw new Error("Ticket no encontrado");
+    throw new NotFoundError("Ticket no encontrado");
   }
 
   return ticket;
