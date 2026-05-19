@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
+const errorHandler = require("./middlewares/errorHandler");
 const AppDataSource = require("./config/data-source");
 const ticketRoutes = require("./routes/ticketRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
@@ -14,6 +15,9 @@ app.use(express.json());
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+
+// * The error handling middleware MUST be the LAST middleware
+app.use(errorHandler);
 
 const PORT = process.env.SERVER_PORT || 3000;
 
