@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 
 const errorHandler = require("./middlewares/errorHandler");
+const notFound = require("./middlewares/notFound");
+
 const AppDataSource = require("./config/data-source");
 const ticketRoutes = require("./routes/ticketRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
@@ -15,6 +17,9 @@ app.use(express.json());
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+
+// * The route not found middleware MUST be after ALL routes
+app.use(notFound);
 
 // * The error handling middleware MUST be the LAST middleware
 app.use(errorHandler);
