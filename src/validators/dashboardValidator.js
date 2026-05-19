@@ -1,3 +1,5 @@
+const ValidationError = require("../errors/ValidationError");
+
 const VALID_PERIODS = ["day", "week", "month"];
 
 const isValidDate = (value) => {
@@ -12,13 +14,13 @@ const validateDashboardFilters = ({ from, to, period }) => {
 
   if (period !== undefined) {
     if (typeof period !== "string") {
-      throw new Error("Period must be a string");
+      throw new ValidationError("Period must be a string");
     }
 
     const sanitizedPeriod = period.trim().toLowerCase();
 
     if (!VALID_PERIODS.includes(sanitizedPeriod)) {
-      throw new Error("Period must be one of: day, week, month");
+      throw new ValidationError("Period must be one of: day, week, month");
     }
 
     sanitizedFilters.period = sanitizedPeriod;
@@ -26,7 +28,7 @@ const validateDashboardFilters = ({ from, to, period }) => {
 
   if (from !== undefined) {
     if (typeof from !== "string" || !isValidDate(from)) {
-      throw new Error("From date must be a valid date");
+      throw new ValidationError("From date must be a valid date");
     }
 
     sanitizedFilters.from = from;
@@ -34,7 +36,7 @@ const validateDashboardFilters = ({ from, to, period }) => {
 
   if (to !== undefined) {
     if (typeof to !== "string" || !isValidDate(to)) {
-      throw new Error("To date must be a valid date");
+      throw new ValidationError("To date must be a valid date");
     }
 
     sanitizedFilters.to = to;
@@ -45,7 +47,7 @@ const validateDashboardFilters = ({ from, to, period }) => {
     const toDate = new Date(sanitizedFilters.to);
 
     if (fromDate > toDate) {
-      throw new Error("From date cannot be greater than to date");
+      throw new ValidationError("From date cannot be greater than to date");
     }
   }
 
