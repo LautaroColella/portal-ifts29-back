@@ -14,6 +14,20 @@ const getAllTickets = async (req, res) => {
   }
 };
 
+const getTicketById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const ticket = await ticketService.getTicketById(id);
+
+    return res.status(200).json(ticket);
+  } catch (err) {
+    return res.status(404).json({
+      error: err.message,
+    });
+  }
+};
+
 const createTicket = async (req, res) => {
   try {
     const ticket = await ticketService.createTicket(req.body);
@@ -28,5 +42,6 @@ const createTicket = async (req, res) => {
 
 module.exports = {
   getAllTickets,
+  getTicketById,
   createTicket,
 };

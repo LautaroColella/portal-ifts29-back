@@ -15,6 +15,16 @@ const getAllTickets = async ({ page, limit, title }) => {
   });
 };
 
+const getTicketById = async (id) => {
+  const ticket = await ticketRepository.findById(id);
+
+  if (!ticket) {
+    throw new Error("Ticket no encontrado");
+  }
+
+  return ticket;
+};
+
 const createTicket = async (ticketData) => {
   const validatedTicket = validateCreateTicket(ticketData);
 
@@ -23,5 +33,6 @@ const createTicket = async (ticketData) => {
 
 module.exports = {
   getAllTickets,
+  getTicketById,
   createTicket,
 };
