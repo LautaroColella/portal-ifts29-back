@@ -1,3 +1,5 @@
+const ValidationError = require("../errors/ValidationError");
+
 const MAX_LIMIT = 50;
 
 /**
@@ -22,17 +24,19 @@ const validatePagination = (page, limit) => {
   limit = Number(limit);
 
   if (!Number.isInteger(page) || page < 1) {
-    throw new Error("El número de página debe ser un entero positivo");
+    throw new ValidationError(
+      "El número de página debe ser un entero positivo",
+    );
   }
 
   if (!Number.isInteger(limit) || limit < 1) {
-    throw new Error(
+    throw new ValidationError(
       "La cantidad de elementos a devolver debe ser un entero positivo",
     );
   }
 
   if (limit > MAX_LIMIT) {
-    throw new Error(
+    throw new ValidationError(
       `La cantidad de elementos a devolver no puede ser mayor que ${MAX_LIMIT}`,
     );
   }

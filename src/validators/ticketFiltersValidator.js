@@ -1,3 +1,5 @@
+const ValidationError = require("../errors/ValidationError");
+
 /**
  * Validates and sanitizes ticket filters.
  *
@@ -15,17 +17,17 @@ const validateTicketFilters = (filters) => {
 
   if (filters.title !== undefined) {
     if (typeof filters.title !== "string") {
-      throw new Error("El título debe ser un texto");
+      throw new ValidationError("El título debe ser un texto");
     }
 
     const sanitizedTitle = filters.title.trim();
 
     if (sanitizedTitle.length === 0) {
-      throw new Error("El título no puede estar vacío");
+      throw new ValidationError("El título no puede estar vacío");
     }
 
     if (sanitizedTitle.length > 100) {
-      throw new Error("El título no puede superar 100 caracteres");
+      throw new ValidationError("El título no puede superar 100 caracteres");
     }
 
     sanitizedFilters.title = sanitizedTitle;

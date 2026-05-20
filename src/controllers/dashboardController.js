@@ -1,22 +1,17 @@
 const dashboardService = require("../services/dashboardService");
+const asyncHandler = require("../middlewares/asyncHandler");
 
-const getDashboardMetrics = async (req, res) => {
-  try {
-    const { from, to, period } = req.query;
+const getDashboardMetrics = asyncHandler(async (req, res) => {
+  const { from, to, period } = req.query;
 
-    const metrics = await dashboardService.getDashboardMetrics({
-      from,
-      to,
-      period,
-    });
+  const metrics = await dashboardService.getDashboardMetrics({
+    from,
+    to,
+    period,
+  });
 
-    return res.status(200).json(metrics);
-  } catch (err) {
-    return res.status(400).json({
-      error: err.message,
-    });
-  }
-};
+  return res.status(200).json(metrics);
+});
 
 module.exports = {
   getDashboardMetrics,
