@@ -187,6 +187,18 @@ const createMessage = async (id, messageData) => {
   return message;
 };
 
+const getTicketHistory = async (id) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  return await ticketHistoryRepository.findAllByTicketId(validatedId);
+};
+
 module.exports = {
   getAllTickets,
   getTicketById,
@@ -197,4 +209,5 @@ module.exports = {
   createComment,
   getAllMessages,
   createMessage,
+  getTicketHistory,
 };
