@@ -8,6 +8,8 @@ const {
   deleteTicket,
   getAllComments,
   createComment,
+  getAllMessages,
+  createMessage,
 } = require("../controllers/ticketController");
 
 const router = express.Router();
@@ -20,5 +22,8 @@ router.delete("/:id", deleteTicket);
 
 router.get("/:id/comments", getAllComments);
 router.post("/:id/comments", createComment);
+
+router.get("/:id/messages", getAllMessages);
+router.post("/:id/messages", createMessage);
 
 module.exports = router;

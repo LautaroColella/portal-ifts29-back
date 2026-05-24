@@ -55,6 +55,22 @@ const createComment = asyncHandler(async (req, res) => {
   return res.status(201).json(comment);
 });
 
+const getAllMessages = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const messages = await ticketService.getAllMessages(id);
+
+  return res.status(200).json(messages);
+});
+
+const createMessage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const message = await ticketService.createMessage(id, req.body);
+
+  return res.status(201).json(message);
+});
+
 module.exports = {
   getAllTickets,
   getTicketById,
@@ -63,4 +79,6 @@ module.exports = {
   deleteTicket,
   getAllComments,
   createComment,
+  getAllMessages,
+  createMessage,
 };
