@@ -94,9 +94,22 @@ const updateTicketStatus = async (id, statusData) => {
   return updatedTicket;
 };
 
+const deleteTicket = async (id) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  await ticketRepository.deleteTicket(validatedId);
+};
+
 module.exports = {
   getAllTickets,
   getTicketById,
   createTicket,
   updateTicketStatus,
+  deleteTicket,
 };

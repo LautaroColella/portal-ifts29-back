@@ -58,9 +58,16 @@ const updateStatus = async (id, updateData) => {
   });
 };
 
+const deleteTicket = async (id) => {
+  const ticketRepository = getRepository();
+
+  await ticketRepository.delete(id);
+};
+
 module.exports = {
   findAll,
   findById,
   create,
   updateStatus,
+  deleteTicket,
 };
