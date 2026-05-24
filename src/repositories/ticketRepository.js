@@ -38,6 +38,7 @@ const findById = async (id) => {
     relations: {
       comments: true,
       messages: true,
+      history: true,
     },
   });
 };

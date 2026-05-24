@@ -1,5 +1,5 @@
 const dashboardService = require("../services/dashboardService");
-const asyncHandler = require("../middlewares/asyncHandler");
+const asyncHandler = require("../helpers/asyncHandler");
 
 const getDashboardMetrics = asyncHandler(async (req, res) => {
   const { from, to, period } = req.query;

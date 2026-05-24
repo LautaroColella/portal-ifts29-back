@@ -1,5 +1,5 @@
 const ticketService = require("../services/ticketService");
-const asyncHandler = require("../middlewares/asyncHandler");
+const asyncHandler = require("../helpers/asyncHandler");
 
 const getAllTickets = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, title } = req.query;
@@ -71,6 +71,14 @@ const createMessage = asyncHandler(async (req, res) => {
   return res.status(201).json(message);
 });
 
+const getTicketHistory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const history = await ticketService.getTicketHistory(id);
+
+  return res.status(200).json(history);
+});
+
 module.exports = {
   getAllTickets,
   getTicketById,
@@ -81,4 +89,5 @@ module.exports = {
   createComment,
   getAllMessages,
   createMessage,
+  getTicketHistory,
 };

@@ -1,6 +1,7 @@
 const ticketRepository = require("../repositories/ticketRepository");
 const commentRepository = require("../repositories/commentRepository");
-const messageRepository = require("../repositories/messageRepository.js");
+const messageRepository = require("../repositories/messageRepository");
+const ticketHistoryRepository = require("../repositories/ticketHistoryRepository");
 
 const { validatePagination } = require("../validators/paginationValidator");
 const {
@@ -17,6 +18,13 @@ const {
 
 const NotFoundError = require("../errors/NotFoundError");
 const ValidationError = require("../errors/ValidationError");
+
+const {
+  createTicketCreatedHistory,
+  createStatusChangedHistory,
+  createCommentAddedHistory,
+  createMessageAddedHistory,
+} = require("../helpers/ticketHistory");
 
 const getAllTickets = async ({ page, limit, title }) => {
   const validatedPagination = validatePagination(page, limit);
@@ -43,7 +51,13 @@ const getTicketById = async (id) => {
 const createTicket = async (ticketData) => {
   const validatedTicket = validateCreateTicket(ticketData);
 
-  return await ticketRepository.create(validatedTicket);
+  const createdTicket = await ticketRepository.create(validatedTicket);
+
+  await ticketHistoryRepository.createHistoryEntry(
+    createTicketCreatedHistory(createdTicket.id),
+  );
+
+  return createdTicket;
 };
 
 const updateTicketStatus = async (id, statusData) => {
@@ -98,6 +112,14 @@ const updateTicketStatus = async (id, statusData) => {
     updateData,
   );
 
+  await ticketHistoryRepository.createHistoryEntry(
+    createStatusChangedHistory({
+      ticketId: validatedId,
+      oldStatus: ticket.status,
+      newStatus: validatedStatus,
+    }),
+  );
+
   return updatedTicket;
 };
 
@@ -147,6 +169,10 @@ const createComment = async (id, commentData) => {
     author: null,
   });
 
+  await ticketHistoryRepository.createHistoryEntry(
+    createCommentAddedHistory(validatedId),
+  );
+
   return comment;
 };
 
@@ -184,7 +210,23 @@ const createMessage = async (id, messageData) => {
     author: null,
   });
 
+  await ticketHistoryRepository.createHistoryEntry(
+    createMessageAddedHistory(validatedId),
+  );
+
   return message;
+};
+
+const getTicketHistory = async (id) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  return await ticketHistoryRepository.findAllByTicketId(validatedId);
 };
 
 module.exports = {
@@ -197,4 +239,5 @@ module.exports = {
   createComment,
   getAllMessages,
   createMessage,
+  getTicketHistory,
 };
