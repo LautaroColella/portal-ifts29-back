@@ -1,5 +1,5 @@
 const ticketService = require("../services/ticketService");
-const asyncHandler = require("../middlewares/asyncHandler");
+const asyncHandler = require("../helpers/asyncHandler");
 
 const getAllTickets = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, title } = req.query;
