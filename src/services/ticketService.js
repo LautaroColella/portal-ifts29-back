@@ -1,5 +1,6 @@
 const ticketRepository = require("../repositories/ticketRepository");
 const commentRepository = require("../repositories/commentRepository");
+const messageRepository = require("../repositories/messageRepository.js");
 
 const { validatePagination } = require("../validators/paginationValidator");
 const {
@@ -149,6 +150,43 @@ const createComment = async (id, commentData) => {
   return comment;
 };
 
+const getAllMessages = async (id) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  return await messageRepository.findAllByTicketId(validatedId);
+};
+
+const createMessage = async (id, messageData) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  const validatedMessage = validateCreateComment(messageData);
+
+  const message = await messageRepository.createMessage({
+    ...validatedMessage,
+
+    ticket: {
+      id: validatedId,
+    },
+
+    // !PLACEHOLDER
+    author: null,
+  });
+
+  return message;
+};
+
 module.exports = {
   getAllTickets,
   getTicketById,
@@ -157,4 +195,6 @@ module.exports = {
   deleteTicket,
   getAllComments,
   createComment,
+  getAllMessages,
+  createMessage,
 };
