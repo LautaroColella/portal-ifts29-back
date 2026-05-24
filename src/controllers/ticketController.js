@@ -1,32 +1,66 @@
 const ticketService = require("../services/ticketService");
+const asyncHandler = require("../middlewares/asyncHandler");
 
-const getAllTickets = async (req, res) => {
-  try {
-    const { page = 1, limit = 10, title } = req.query;
+const getAllTickets = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10, title } = req.query;
 
-    const tickets = await ticketService.getAllTickets({ page, limit, title });
+  const tickets = await ticketService.getAllTickets({ page, limit, title });
 
-    return res.status(200).json(tickets);
-  } catch (err) {
-    return res.status(400).json({
-      error: err.message,
-    });
-  }
-};
+  return res.status(200).json(tickets);
+});
 
-const createTicket = async (req, res) => {
-  try {
-    const ticket = await ticketService.createTicket(req.body);
+const getTicketById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    return res.status(201).json(ticket);
-  } catch (err) {
-    return res.status(400).json({
-      error: err.message,
-    });
-  }
-};
+  const ticket = await ticketService.getTicketById(id);
+
+  return res.status(200).json(ticket);
+});
+
+const createTicket = asyncHandler(async (req, res) => {
+  const ticket = await ticketService.createTicket(req.body);
+
+  return res.status(201).json(ticket);
+});
+
+const updateTicketStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedTicket = await ticketService.updateTicketStatus(id, req.body);
+
+  return res.status(200).json(updatedTicket);
+});
+
+const deleteTicket = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  await ticketService.deleteTicket(id);
+
+  return res.status(204).send();
+});
+
+const getAllComments = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const comments = await ticketService.getAllComments(id);
+
+  return res.status(200).json(comments);
+});
+
+const createComment = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const comment = await ticketService.createComment(id, req.body);
+
+  return res.status(201).json(comment);
+});
 
 module.exports = {
   getAllTickets,
+  getTicketById,
   createTicket,
+  updateTicketStatus,
+  deleteTicket,
+  getAllComments,
+  createComment,
 };

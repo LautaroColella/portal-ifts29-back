@@ -1,3 +1,5 @@
+const ValidationError = require("../errors/ValidationError");
+
 const CATEGORY_SUBCATEGORY_MAP = {
   ACADEMIC: [
     "GRADE_ISSUE",
@@ -40,7 +42,7 @@ const CATEGORY_SUBCATEGORY_MAP = {
  */
 const validateCreateTicket = (ticketData) => {
   if (!ticketData || typeof ticketData !== "object") {
-    throw new Error("El cuerpo de la petición es inválido");
+    throw new ValidationError("El cuerpo de la petición es inválido");
   }
 
   const {
@@ -54,34 +56,36 @@ const validateCreateTicket = (ticketData) => {
   } = ticketData;
 
   if (!title || typeof title !== "string") {
-    throw new Error("Título inválido");
+    throw new ValidationError("Título inválido");
   }
 
   if (!description || typeof description !== "string") {
-    throw new Error("Descripción inválida");
+    throw new ValidationError("Descripción inválida");
   }
 
   if (!category || !CATEGORY_SUBCATEGORY_MAP[category]) {
-    throw new Error("Categoría inválida");
+    throw new ValidationError("Categoría inválida");
   }
 
   if (
     !subcategory ||
     !CATEGORY_SUBCATEGORY_MAP[category].includes(subcategory)
   ) {
-    throw new Error("La subcategoría no pertenece a la categoría seleccionada");
+    throw new ValidationError(
+      "La subcategoría no pertenece a la categoría seleccionada",
+    );
   }
 
   if (subject && typeof subject !== "string") {
-    throw new Error("Materia inválida");
+    throw new ValidationError("Materia inválida");
   }
 
   if (commission && typeof commission !== "string") {
-    throw new Error("Comisión inválida");
+    throw new ValidationError("Comisión inválida");
   }
 
   if (metadata && typeof metadata !== "object") {
-    throw new Error("Metadata inválida");
+    throw new ValidationError("Metadata inválida");
   }
 
   return {
