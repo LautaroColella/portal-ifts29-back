@@ -4,6 +4,8 @@ const {
   validateTicketFilters,
 } = require("../validators/ticketFiltersValidator");
 const { validateCreateTicket } = require("../validators/createTicketValidator");
+const { validateTicketId } = require("../validators/ticketIdValidator");
+const NotFoundError = require("../errors/NotFoundError");
 
 const getAllTickets = async ({ page, limit, title }) => {
   const validatedPagination = validatePagination(page, limit);
@@ -13,6 +15,18 @@ const getAllTickets = async ({ page, limit, title }) => {
     ...validatedPagination,
     ...validatedFilters,
   });
+};
+
+const getTicketById = async (id) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  return ticket;
 };
 
 const createTicket = async (ticketData) => {
@@ -42,6 +56,7 @@ const updateTicketStatus = async (id, status) => {
 
 module.exports = {
   getAllTickets,
+  getTicketById,
   createTicket,
   updateTicketStatus,
 };

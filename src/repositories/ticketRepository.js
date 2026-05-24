@@ -30,6 +30,14 @@ const findAll = async (filters) => {
   };
 };
 
+const findById = async (id) => {
+  return await getRepository().findOne({
+    where: {
+      id,
+    },
+  });
+};
+
 const create = async (ticketData) => {
   const ticketRepository = getRepository();
 
@@ -54,6 +62,7 @@ const updateStatus = async (id, status) => {
 
 module.exports = {
   findAll,
+  findById,
   create,
   updateStatus,
 };
