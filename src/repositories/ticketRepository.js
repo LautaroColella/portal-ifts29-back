@@ -35,6 +35,9 @@ const findById = async (id) => {
     where: {
       id,
     },
+    relations: {
+      comments: true,
+    },
   });
 };
 
