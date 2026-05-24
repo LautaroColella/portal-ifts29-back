@@ -15,7 +15,17 @@ const createTicket = asyncHandler(async (req, res) => {
   return res.status(201).json(ticket);
 });
 
+const updateTicketStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const updatedTicket = await ticketService.updateTicketStatus(id, status);
+
+  return res.status(200).json(updatedTicket);
+});
+
 module.exports = {
   getAllTickets,
   createTicket,
+  updateTicketStatus,
 };

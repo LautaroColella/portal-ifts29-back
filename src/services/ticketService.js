@@ -21,7 +21,27 @@ const createTicket = async (ticketData) => {
   return await ticketRepository.create(validatedTicket);
 };
 
+const updateTicketStatus = async (id, status) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  const validatedStatus = validateTicketStatus(status);
+
+  const updatedTicket = await ticketRepository.updateStatus(
+    validatedId,
+    validatedStatus,
+  );
+
+  return updatedTicket;
+};
+
 module.exports = {
   getAllTickets,
   createTicket,
+  updateTicketStatus,
 };
