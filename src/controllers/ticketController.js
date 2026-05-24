@@ -9,13 +9,31 @@ const getAllTickets = asyncHandler(async (req, res) => {
   return res.status(200).json(tickets);
 });
 
+const getTicketById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const ticket = await ticketService.getTicketById(id);
+
+  return res.status(200).json(ticket);
+});
+
 const createTicket = asyncHandler(async (req, res) => {
   const ticket = await ticketService.createTicket(req.body);
 
   return res.status(201).json(ticket);
 });
 
+const updateTicketStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedTicket = await ticketService.updateTicketStatus(id, req.body);
+
+  return res.status(200).json(updatedTicket);
+});
+
 module.exports = {
   getAllTickets,
+  getTicketById,
   createTicket,
+  updateTicketStatus,
 };

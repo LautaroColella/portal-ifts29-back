@@ -30,6 +30,14 @@ const findAll = async (filters) => {
   };
 };
 
+const findById = async (id) => {
+  return await getRepository().findOne({
+    where: {
+      id,
+    },
+  });
+};
+
 const create = async (ticketData) => {
   const ticketRepository = getRepository();
 
@@ -40,7 +48,19 @@ const create = async (ticketData) => {
   return await ticketRepository.save(ticket);
 };
 
+const updateStatus = async (id, updateData) => {
+  const ticketRepository = getRepository();
+
+  await ticketRepository.update(id, updateData);
+
+  return await ticketRepository.findOne({
+    where: { id },
+  });
+};
+
 module.exports = {
   findAll,
+  findById,
   create,
+  updateStatus,
 };
