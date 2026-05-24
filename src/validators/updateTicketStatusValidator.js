@@ -22,7 +22,13 @@ const VALID_TICKET_STATUSES = [
  * @throws {ValidationError}
  * Throws an error if validation fails.
  */
-const validateTicketStatus = (status) => {
+const validateTicketStatus = (statusData) => {
+  if (!statusData || typeof statusData !== "object") {
+    throw new ValidationError("El cuerpo de la petición es inválido");
+  }
+
+  const { status } = statusData;
+
   if (!status || typeof status !== "string") {
     throw new ValidationError("El estado del ticket es requerido");
   }
