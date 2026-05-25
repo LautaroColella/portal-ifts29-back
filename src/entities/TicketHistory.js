@@ -1,4 +1,3 @@
-// !PLACEHOLDER, NOT IMPLEMENTED
 const { EntitySchema } = require("typeorm");
 
 module.exports = new EntitySchema({
@@ -12,6 +11,38 @@ module.exports = new EntitySchema({
       type: "int",
       generated: true,
     },
+
+    action: {
+      type: "enum",
+      enum: [
+        "TICKET_CREATED",
+        "STATUS_CHANGED",
+        "ASSIGNED_CHANGED",
+        "COMMENT_ADDED",
+        "MESSAGE_ADDED",
+      ],
+      nullable: false,
+    },
+
+    oldValue: {
+      type: "varchar",
+      nullable: true,
+    },
+
+    newValue: {
+      type: "varchar",
+      nullable: true,
+    },
+
+    description: {
+      type: "text",
+      nullable: false,
+    },
+
+    createdAt: {
+      type: "timestamp",
+      createDate: true,
+    },
   },
 
   relations: {
@@ -20,6 +51,15 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       joinColumn: true,
       nullable: false,
+      onDelete: "CASCADE",
+    },
+
+    // !PLACEHOLDER
+    performedBy: {
+      target: "User",
+      type: "many-to-one",
+      joinColumn: true,
+      nullable: true,
     },
   },
 });
