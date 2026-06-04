@@ -11,7 +11,6 @@ const CATEGORY_SUBCATEGORY_MAP = {
   INSTITUTIONAL: [
     "SUBJECT_EQUIVALENCY_REQUEST",
     "GRADE_RECORD_CORRECTION_REQUEST",
-    "NEW_STUDENT_CERTIFICATE_REQUEST",
     "EXAM_CERTIFICATE_REQUEST",
     "DEGREE_PROCESS_REQUEST",
     "CLASS_SECTION_CHANGE_REQUEST",
@@ -59,8 +58,20 @@ const validateCreateTicket = (ticketData) => {
     throw new ValidationError("Título inválido");
   }
 
+  if (title.length > 50) {
+    throw new ValidationError(
+      "El título del ticket no puede superar los 50 caracteres",
+    );
+  }
+
   if (!description || typeof description !== "string") {
     throw new ValidationError("Descripción inválida");
+  }
+
+  if (description.length > 200) {
+    throw new ValidationError(
+      "La descripción del ticket no puede superar los 200 caracteres",
+    );
   }
 
   if (!category || !CATEGORY_SUBCATEGORY_MAP[category]) {
