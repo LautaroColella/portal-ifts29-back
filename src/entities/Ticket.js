@@ -54,7 +54,6 @@ module.exports = new EntitySchema({
         // Institutional
         "SUBJECT_EQUIVALENCY_REQUEST",
         "GRADE_RECORD_CORRECTION_REQUEST",
-        "NEW_STUDENT_CERTIFICATE_REQUEST",
         "EXAM_CERTIFICATE_REQUEST",
         "DEGREE_PROCESS_REQUEST",
         "CLASS_SECTION_CHANGE_REQUEST",
