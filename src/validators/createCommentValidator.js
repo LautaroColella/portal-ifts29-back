@@ -29,6 +29,12 @@ const validateCreateComment = (commentData) => {
     throw new ValidationError("El contenido del comentario es inválido");
   }
 
+  if (sanitizedContent.length > 100) {
+    throw new ValidationError(
+      "El contenido del comentario no puede superar los 100 caracteres",
+    );
+  }
+
   return {
     content: sanitizedContent,
   };
