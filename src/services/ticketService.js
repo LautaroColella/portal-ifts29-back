@@ -25,15 +25,19 @@ const {
   createCommentAddedHistory,
   createMessageAddedHistory,
 } = require("../helpers/ticketHistory");
+const { addTicketLabels, addHistoryLabels } = require("../helpers/ticketLabel");
 
 const getAllTickets = async ({ page, limit, title }) => {
   const validatedPagination = validatePagination(page, limit);
   const validatedFilters = validateTicketFilters({ title });
 
-  return await ticketRepository.findAll({
+  const result = await ticketRepository.findAll({
     ...validatedPagination,
     ...validatedFilters,
   });
+
+  result.data = result.data.map(addTicketLabels);
+  return result;
 };
 
 const getTicketById = async (id) => {
@@ -45,7 +49,9 @@ const getTicketById = async (id) => {
     throw new NotFoundError("Ticket no encontrado");
   }
 
-  return ticket;
+  ticket.history = ticket.history.map(addHistoryLabels);
+
+  return addTicketLabels(ticket);
 };
 
 const createTicket = async (ticketData) => {
@@ -226,7 +232,9 @@ const getTicketHistory = async (id) => {
     throw new NotFoundError("Ticket no encontrado");
   }
 
-  return await ticketHistoryRepository.findAllByTicketId(validatedId);
+  const history = await ticketHistoryRepository.findAllByTicketId(validatedId);
+
+  return history.map(addHistoryLabels);
 };
 
 module.exports = {

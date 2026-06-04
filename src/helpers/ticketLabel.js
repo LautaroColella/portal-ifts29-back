@@ -34,6 +34,14 @@ const TICKET_SUBCATEGORY_LABELS = {
   GENERAL_INQUIRY: "Consulta general",
 };
 
+const TICKET_HISTORY_ACTION_LABELS = {
+  TICKET_CREATED: "Ticket creado",
+  STATUS_CHANGED: "Estado modificado",
+  ASSIGNED_CHANGED: "Responsable modificado",
+  COMMENT_ADDED: "Comentario agregado",
+  MESSAGE_ADDED: "Mensaje agregado",
+};
+
 const addTicketLabels = (ticket) => ({
   ...ticket,
 
@@ -44,10 +52,29 @@ const addTicketLabels = (ticket) => ({
   subcategoryLabel: TICKET_SUBCATEGORY_LABELS[ticket.subcategory],
 });
 
+const addHistoryLabels = (historyEntry) => {
+  const result = {
+    ...historyEntry,
+
+    actionLabel: TICKET_HISTORY_ACTION_LABELS[historyEntry.action],
+  };
+
+  if (historyEntry.action === "STATUS_CHANGED") {
+    result.oldValueLabel =
+      TICKET_STATUS_LABELS[historyEntry.oldValue] ?? historyEntry.oldValue;
+
+    result.newValueLabel =
+      TICKET_STATUS_LABELS[historyEntry.newValue] ?? historyEntry.newValue;
+  }
+
+  return result;
+};
+
 module.exports = {
   addTicketLabels,
-
+  addHistoryLabels,
   TICKET_STATUS_LABELS,
   TICKET_CATEGORY_LABELS,
   TICKET_SUBCATEGORY_LABELS,
+  TICKET_HISTORY_ACTION_LABELS,
 };
