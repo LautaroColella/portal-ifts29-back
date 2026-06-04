@@ -18,7 +18,7 @@ const getTicketById = asyncHandler(async (req, res) => {
 });
 
 const createTicket = asyncHandler(async (req, res) => {
-  const ticket = await ticketService.createTicket(req.body);
+  const ticket = await ticketService.createTicket(req.body, req.user.id);
 
   return res.status(201).json(ticket);
 });
@@ -50,7 +50,7 @@ const getAllComments = asyncHandler(async (req, res) => {
 const createComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const comment = await ticketService.createComment(id, req.body);
+  const comment = await ticketService.createComment(id, req.body, req.user.id);
 
   return res.status(201).json(comment);
 });
@@ -66,7 +66,7 @@ const getAllMessages = asyncHandler(async (req, res) => {
 const createMessage = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const message = await ticketService.createMessage(id, req.body);
+  const message = await ticketService.createMessage(id, req.body, req.user.id);
 
   return res.status(201).json(message);
 });

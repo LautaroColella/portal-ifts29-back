@@ -48,6 +48,9 @@ const create = async (ticketData) => {
 
   const ticket = ticketRepository.create({
     ...ticketData,
+    createdBy: {
+      id: userId,
+    },
   });
 
   return await ticketRepository.save(ticket);

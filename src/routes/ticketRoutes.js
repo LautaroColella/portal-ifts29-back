@@ -13,19 +13,21 @@ const {
   getTicketHistory,
 } = require("../controllers/ticketController");
 
+const authMiddleware = require("../middlewares/auth");
+
 const router = express.Router();
 
 router.get("/", getAllTickets);
 router.get("/:id", getTicketById);
-router.post("/", createTicket);
+router.post("/", authMiddleware, createTicket);
 router.patch("/:id/status", updateTicketStatus);
 router.delete("/:id", deleteTicket);
 
 router.get("/:id/comments", getAllComments);
-router.post("/:id/comments", createComment);
+router.post("/:id/comments", authMiddleware, createComment);
 
 router.get("/:id/messages", getAllMessages);
-router.post("/:id/messages", createMessage);
+router.post("/:id/messages", authMiddleware, createMessage);
 
 router.get("/:id/history", getTicketHistory);
 

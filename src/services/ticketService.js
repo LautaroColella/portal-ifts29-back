@@ -54,7 +54,7 @@ const getTicketById = async (id) => {
   return addTicketLabels(ticket);
 };
 
-const createTicket = async (ticketData) => {
+const createTicket = async (ticketData, userId) => {
   const validatedTicket = validateCreateTicket(ticketData);
 
   const createdTicket = await ticketRepository.create(validatedTicket);
@@ -153,7 +153,7 @@ const getAllComments = async (id) => {
   return await commentRepository.findAllByTicketId(validatedId);
 };
 
-const createComment = async (id, commentData) => {
+const createComment = async (id, commentData, userId) => {
   const validatedId = validateTicketId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
@@ -171,8 +171,9 @@ const createComment = async (id, commentData) => {
       id: validatedId,
     },
 
-    // !PLACEHOLDER
-    author: null,
+    author: {
+      id: userId,
+    },
   });
 
   await ticketHistoryRepository.createHistoryEntry(
@@ -212,8 +213,9 @@ const createMessage = async (id, messageData) => {
       id: validatedId,
     },
 
-    // !PLACEHOLDER
-    author: null,
+    author: {
+      id: userId,
+    },
   });
 
   await ticketHistoryRepository.createHistoryEntry(
