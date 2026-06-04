@@ -36,14 +36,24 @@ const findById = async (id) => {
       id,
     },
     relations: {
-      comments: true,
-      messages: true,
-      history: true,
+      createdBy: true,
+      assignedTo: true,
+      comments: {
+        author: true,
+      },
+
+      messages: {
+        author: true,
+      },
+
+      history: {
+        performedBy: true,
+      },
     },
   });
 };
 
-const create = async (ticketData) => {
+const create = async (ticketData, userId) => {
   const ticketRepository = getRepository();
 
   const ticket = ticketRepository.create({

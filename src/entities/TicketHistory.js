@@ -54,12 +54,11 @@ module.exports = new EntitySchema({
       onDelete: "CASCADE",
     },
 
-    // !PLACEHOLDER
     performedBy: {
       target: "User",
       type: "many-to-one",
       joinColumn: true,
-      nullable: true,
+      nullable: false,
     },
   },
 });

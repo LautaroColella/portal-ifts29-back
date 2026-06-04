@@ -26,6 +26,13 @@ const {
   createMessageAddedHistory,
 } = require("../helpers/ticketHistory");
 const { addTicketLabels, addHistoryLabels } = require("../helpers/ticketLabel");
+const { mapUserSummary } = require("../helpers/userResponse");
+const {
+  mapHistoryEntry,
+  mapMessage,
+  mapComment,
+  mapTicketDetails,
+} = require("../helpers/ticketResponse");
 
 const getAllTickets = async ({ page, limit, title }) => {
   const validatedPagination = validatePagination(page, limit);
@@ -49,24 +56,22 @@ const getTicketById = async (id) => {
     throw new NotFoundError("Ticket no encontrado");
   }
 
-  ticket.history = ticket.history.map(addHistoryLabels);
-
-  return addTicketLabels(ticket);
+  return mapTicketDetails(ticket);
 };
 
 const createTicket = async (ticketData, userId) => {
   const validatedTicket = validateCreateTicket(ticketData);
 
-  const createdTicket = await ticketRepository.create(validatedTicket);
+  const createdTicket = await ticketRepository.create(validatedTicket, userId);
 
   await ticketHistoryRepository.createHistoryEntry(
-    createTicketCreatedHistory(createdTicket.id),
+    createTicketCreatedHistory(createdTicket.id, userId),
   );
 
   return createdTicket;
 };
 
-const updateTicketStatus = async (id, statusData) => {
+const updateTicketStatus = async (id, statusData, userId) => {
   const validatedId = validateTicketId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
@@ -119,11 +124,14 @@ const updateTicketStatus = async (id, statusData) => {
   );
 
   await ticketHistoryRepository.createHistoryEntry(
-    createStatusChangedHistory({
-      ticketId: validatedId,
-      oldStatus: ticket.status,
-      newStatus: validatedStatus,
-    }),
+    createStatusChangedHistory(
+      {
+        ticketId: validatedId,
+        oldStatus: ticket.status,
+        newStatus: validatedStatus,
+      },
+      userId,
+    ),
   );
 
   return updatedTicket;
@@ -150,7 +158,9 @@ const getAllComments = async (id) => {
     throw new NotFoundError("Ticket no encontrado");
   }
 
-  return await commentRepository.findAllByTicketId(validatedId);
+  const comments = await commentRepository.findAllByTicketId(validatedId);
+
+  return comments.map(mapComment);
 };
 
 const createComment = async (id, commentData, userId) => {
@@ -177,7 +187,7 @@ const createComment = async (id, commentData, userId) => {
   });
 
   await ticketHistoryRepository.createHistoryEntry(
-    createCommentAddedHistory(validatedId),
+    createCommentAddedHistory(validatedId, userId),
   );
 
   return comment;
@@ -192,10 +202,11 @@ const getAllMessages = async (id) => {
     throw new NotFoundError("Ticket no encontrado");
   }
 
-  return await messageRepository.findAllByTicketId(validatedId);
+  const messages = await messageRepository.findAllByTicketId(validatedId);
+  return messages.map(mapMessage);
 };
 
-const createMessage = async (id, messageData) => {
+const createMessage = async (id, messageData, userId) => {
   const validatedId = validateTicketId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
@@ -219,7 +230,7 @@ const createMessage = async (id, messageData) => {
   });
 
   await ticketHistoryRepository.createHistoryEntry(
-    createMessageAddedHistory(validatedId),
+    createMessageAddedHistory(validatedId, userId),
   );
 
   return message;
@@ -235,8 +246,7 @@ const getTicketHistory = async (id) => {
   }
 
   const history = await ticketHistoryRepository.findAllByTicketId(validatedId);
-
-  return history.map(addHistoryLabels);
+  return history.map(mapHistoryEntry);
 };
 
 module.exports = {
