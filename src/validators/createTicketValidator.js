@@ -58,8 +58,20 @@ const validateCreateTicket = (ticketData) => {
     throw new ValidationError("Título inválido");
   }
 
+  if (title.length > 50) {
+    throw new ValidationError(
+      "El título del ticket no puede superar los 50 caracteres",
+    );
+  }
+
   if (!description || typeof description !== "string") {
     throw new ValidationError("Descripción inválida");
+  }
+
+  if (description.length > 200) {
+    throw new ValidationError(
+      "La descripción del ticket no puede superar los 200 caracteres",
+    );
   }
 
   if (!category || !CATEGORY_SUBCATEGORY_MAP[category]) {
