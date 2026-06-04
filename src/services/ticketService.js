@@ -1,8 +1,11 @@
+// REPOSITORIES
 const ticketRepository = require("../repositories/ticketRepository");
 const commentRepository = require("../repositories/commentRepository");
 const messageRepository = require("../repositories/messageRepository");
 const ticketHistoryRepository = require("../repositories/ticketHistoryRepository");
+const userRepository = require("../repositories/userRepository");
 
+// VALIDATORS
 const { validatePagination } = require("../validators/paginationValidator");
 const {
   validateTicketFilters,
@@ -13,12 +16,17 @@ const {
   validateTicketStatus,
 } = require("../validators/updateTicketStatusValidator");
 const {
+  validateTicketAssignee,
+} = require("../validators/updateTicketAssigneeValidator");
+const {
   validateCreateComment,
 } = require("../validators/createCommentValidator");
 
+// ERRORS
 const NotFoundError = require("../errors/NotFoundError");
 const ValidationError = require("../errors/ValidationError");
 
+// HELPERS
 const {
   createTicketCreatedHistory,
   createStatusChangedHistory,
@@ -131,6 +139,50 @@ const updateTicketStatus = async (id, statusData, userId) => {
         newStatus: validatedStatus,
       },
       userId,
+    ),
+  );
+
+  return updatedTicket;
+};
+
+const updateTicketAssignee = async (id, assigneeData, performedById) => {
+  const validatedId = validateTicketId(id);
+
+  const ticket = await ticketRepository.findById(validatedId);
+
+  if (!ticket) {
+    throw new NotFoundError("Ticket no encontrado");
+  }
+
+  const assignedToId = validateTicketAssignee(assigneeData);
+
+  const assignedUser = await userRepository.findById(assignedToId);
+
+  if (!assignedUser) {
+    throw new NotFoundError("Usuario responsable no encontrado");
+  }
+
+  if (ticket.assignedTo?.id === assignedToId) {
+    throw new ValidationError("El ticket ya está asignado a este usuario");
+  }
+
+  const updatedTicket = await ticketRepository.updateAssignee(
+    validatedId,
+    assignedToId,
+  );
+
+  const oldAssigneeName = ticket.assignedTo
+    ? `${ticket.assignedTo.firstName} ${ticket.assignedTo.lastName}`
+    : null;
+
+  const newAssigneeName = `${assignedUser.firstName} ${assignedUser.lastName}`;
+
+  await ticketHistoryRepository.createHistoryEntry(
+    createAssignedChangedHistory(
+      validatedId,
+      performedById,
+      oldAssigneeName,
+      newAssigneeName,
     ),
   );
 
@@ -254,6 +306,7 @@ module.exports = {
   getTicketById,
   createTicket,
   updateTicketStatus,
+  updateTicketAssignee,
   deleteTicket,
   getAllComments,
   createComment,

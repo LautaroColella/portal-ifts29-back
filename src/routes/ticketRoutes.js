@@ -5,6 +5,7 @@ const {
   getTicketById,
   createTicket,
   updateTicketStatus,
+  updateTicketAssignee,
   deleteTicket,
   getAllComments,
   createComment,
@@ -21,6 +22,7 @@ router.get("/", getAllTickets);
 router.get("/:id", authMiddleware, getTicketById);
 router.post("/", authMiddleware, createTicket);
 router.patch("/:id/status", authMiddleware, updateTicketStatus);
+router.patch("/:id/assignee", authMiddleware, updateTicketAssignee);
 router.delete("/:id", deleteTicket);
 
 router.get("/:id/comments", authMiddleware, getAllComments);

@@ -35,6 +35,18 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
   return res.status(200).json(updatedTicket);
 });
 
+const updateTicketAssignee = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedTicket = await ticketService.updateTicketAssignee(
+    id,
+    req.body,
+    req.user.id,
+  );
+
+  return res.status(200).json(updatedTicket);
+});
+
 const deleteTicket = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -88,6 +100,7 @@ module.exports = {
   getTicketById,
   createTicket,
   updateTicketStatus,
+  updateTicketAssignee,
   deleteTicket,
   getAllComments,
   createComment,

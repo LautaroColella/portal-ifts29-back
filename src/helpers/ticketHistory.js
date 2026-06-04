@@ -31,6 +31,26 @@ const createStatusChangedHistory = (
   },
 });
 
+const createAssignedChangedHistory = (
+  ticketId,
+  performedById,
+  oldAssigneeName,
+  newAssigneeName,
+) => ({
+  action: "ASSIGNED_CHANGED",
+  oldValue: oldAssigneeName,
+  newValue: newAssigneeName,
+  description: `Responsable cambiado de ${oldAssigneeName ?? "sin asignar"} a ${newAssigneeName}`,
+
+  ticket: {
+    id: ticketId,
+  },
+
+  performedBy: {
+    id: performedById,
+  },
+});
+
 const createCommentAddedHistory = (ticketId, performedById) => ({
   action: "COMMENT_ADDED",
   oldValue: null,
@@ -64,6 +84,7 @@ const createMessageAddedHistory = (ticketId, performedById) => ({
 module.exports = {
   createTicketCreatedHistory,
   createStatusChangedHistory,
+  createAssignedChangedHistory,
   createCommentAddedHistory,
   createMessageAddedHistory,
 };

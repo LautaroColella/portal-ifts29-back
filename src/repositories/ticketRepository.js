@@ -66,14 +66,24 @@ const create = async (ticketData, userId) => {
   return await ticketRepository.save(ticket);
 };
 
-const updateStatus = async (id, updateData) => {
+const updateStatus = async (ticketId, updateData) => {
   const ticketRepository = getRepository();
 
-  await ticketRepository.update(id, updateData);
+  await ticketRepository.update(ticketId, updateData);
 
-  return await ticketRepository.findOne({
-    where: { id },
+  return await findById(ticketId);
+};
+
+const updateAssignee = async (ticketId, assignedToId) => {
+  const repository = getRepository();
+
+  await repository.update(ticketId, {
+    assignedTo: {
+      id: assignedToId,
+    },
   });
+
+  return await findById(ticketId);
 };
 
 const deleteTicket = async (id) => {
@@ -87,5 +97,6 @@ module.exports = {
   findById,
   create,
   updateStatus,
+  updateAssignee,
   deleteTicket,
 };
