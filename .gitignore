@@ -1,2 +1,11 @@
 node_modules
 .env
+
+# AI Context Files (Local Only)
+context/
+.context/
+.agents/
+agents/
+CLAUDE.md
+skills-lock.json
+opencode.jsonc
