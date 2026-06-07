@@ -2,6 +2,7 @@ const ticketRepository = require("../repositories/ticketRepository");
 const commentRepository = require("../repositories/commentRepository");
 const messageRepository = require("../repositories/messageRepository");
 const ticketHistoryRepository = require("../repositories/ticketHistoryRepository");
+const notificationService = require("../services/notificationService");
 
 const { validatePagination } = require("../validators/paginationValidator");
 const {
@@ -62,6 +63,24 @@ const createTicket = async (ticketData) => {
   await ticketHistoryRepository.createHistoryEntry(
     createTicketCreatedHistory(createdTicket.id),
   );
+
+  if (createdTicket.assignedTo) {
+    await notificationService.createNotification({
+      message: `Nuevo ticket #${createdTicket.id} asignado: ${createdTicket.title}`,
+      type: "TICKET_CREATED",
+      ticket: { id: createdTicket.id },
+      recipient: { id: createdTicket.assignedTo.id },
+    });
+  }
+
+  if (createdTicket.createdBy && (!createdTicket.assignedTo || createdTicket.createdBy.id !== createdTicket.assignedTo.id)) {
+    await notificationService.createNotification({
+      message: `Nuevo ticket #${createdTicket.id} creado: ${createdTicket.title}`,
+      type: "TICKET_CREATED",
+      ticket: { id: createdTicket.id },
+      recipient: { id: createdTicket.createdBy.id },
+    });
+  }
 
   return createdTicket;
 };
@@ -126,6 +145,24 @@ const updateTicketStatus = async (id, statusData) => {
     }),
   );
 
+  if (ticket.createdBy) {
+    await notificationService.createNotification({
+      message: `Ticket #${validatedId} cambió estado a ${validatedStatus}`,
+      type: "STATUS_CHANGED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.createdBy.id },
+    });
+  }
+
+  if (ticket.assignedTo && (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)) {
+    await notificationService.createNotification({
+      message: `Ticket #${validatedId} cambió estado a ${validatedStatus}`,
+      type: "STATUS_CHANGED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.assignedTo.id },
+    });
+  }
+
   return updatedTicket;
 };
 
@@ -179,6 +216,24 @@ const createComment = async (id, commentData) => {
     createCommentAddedHistory(validatedId),
   );
 
+  if (ticket.assignedTo) {
+    await notificationService.createNotification({
+      message: `Nuevo comentario en ticket #${validatedId}`,
+      type: "COMMENT_ADDED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.assignedTo.id },
+    });
+  }
+
+  if (ticket.createdBy && (!ticket.assignedTo || ticket.createdBy.id !== ticket.assignedTo.id)) {
+    await notificationService.createNotification({
+      message: `Nuevo comentario en ticket #${validatedId}`,
+      type: "COMMENT_ADDED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.createdBy.id },
+    });
+  }
+
   return comment;
 };
 
@@ -219,6 +274,24 @@ const createMessage = async (id, messageData) => {
   await ticketHistoryRepository.createHistoryEntry(
     createMessageAddedHistory(validatedId),
   );
+
+  if (ticket.createdBy) {
+    await notificationService.createNotification({
+      message: `Nuevo mensaje en ticket #${validatedId}`,
+      type: "MESSAGE_ADDED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.createdBy.id },
+    });
+  }
+
+  if (ticket.assignedTo && (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)) {
+    await notificationService.createNotification({
+      message: `Nuevo mensaje en ticket #${validatedId}`,
+      type: "MESSAGE_ADDED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.assignedTo.id },
+    });
+  }
 
   return message;
 };
