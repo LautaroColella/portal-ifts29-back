@@ -11,7 +11,7 @@ const {
   validateTicketFilters,
 } = require("../validators/ticketFiltersValidator");
 const { validateCreateTicket } = require("../validators/createTicketValidator");
-const { validateTicketId } = require("../validators/ticketIdValidator");
+const { validateId } = require("../validators/idValidator");
 const {
   validateTicketStatus,
 } = require("../validators/updateTicketStatusValidator");
@@ -56,7 +56,7 @@ const getAllTickets = async ({ page, limit, title }) => {
 };
 
 const getTicketById = async (id) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -80,7 +80,7 @@ const createTicket = async (ticketData, userId) => {
 };
 
 const updateTicketStatus = async (id, statusData, userId) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -146,7 +146,7 @@ const updateTicketStatus = async (id, statusData, userId) => {
 };
 
 const updateTicketAssignee = async (id, assigneeData, performedById) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -190,7 +190,7 @@ const updateTicketAssignee = async (id, assigneeData, performedById) => {
 };
 
 const deleteTicket = async (id) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -202,7 +202,7 @@ const deleteTicket = async (id) => {
 };
 
 const getAllComments = async (id) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -216,7 +216,7 @@ const getAllComments = async (id) => {
 };
 
 const createComment = async (id, commentData, userId) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -246,7 +246,7 @@ const createComment = async (id, commentData, userId) => {
 };
 
 const getAllMessages = async (id) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -259,7 +259,7 @@ const getAllMessages = async (id) => {
 };
 
 const createMessage = async (id, messageData, userId) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
@@ -289,7 +289,7 @@ const createMessage = async (id, messageData, userId) => {
 };
 
 const getTicketHistory = async (id) => {
-  const validatedId = validateTicketId(id);
+  const validatedId = validateId(id);
 
   const ticket = await ticketRepository.findById(validatedId);
 
