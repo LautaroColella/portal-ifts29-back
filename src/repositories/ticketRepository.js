@@ -5,16 +5,58 @@ const getRepository = () => {
 };
 
 const findAll = async (filters) => {
-  const { page, limit, title } = filters;
+  const { page, limit, title, currentUser } = filters;
 
   const skip = (page - 1) * limit;
 
-  const query = getRepository().createQueryBuilder("ticket");
+  const query = getRepository()
+    .createQueryBuilder("ticket")
+    .leftJoinAndSelect("ticket.createdBy", "createdBy")
+    .leftJoinAndSelect("ticket.assignedTo", "assignedTo");
 
   if (title) {
     query.andWhere("LOWER(ticket.title) LIKE LOWER(:title)", {
       title: `%${title}%`,
     });
+  }
+
+  switch (currentUser.role) {
+    case "STUDENT":
+      query.andWhere("createdBy.id = :userId", {
+        userId: currentUser.id,
+      });
+      break;
+
+    case "STAFF": {
+      const subcategories = currentUser.responsibleSubcategories ?? [];
+
+      if (subcategories.length > 0) {
+        query.andWhere(
+          `(
+            assignedTo.id = :userId
+            OR
+            ticket.subcategory IN (:...subcategories)
+          )`,
+          {
+            userId: currentUser.id,
+            subcategories,
+          },
+        );
+      } else {
+        query.andWhere("assignedTo.id = :userId", {
+          userId: currentUser.id,
+        });
+      }
+
+      break;
+    }
+
+    case "MANAGEMENT":
+    case "ADMIN":
+      break;
+
+    default:
+      query.andWhere("1 = 0");
   }
 
   query.orderBy("ticket.createdAt", "DESC").skip(skip).take(limit);

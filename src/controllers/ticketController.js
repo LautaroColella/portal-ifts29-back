@@ -4,7 +4,10 @@ const asyncHandler = require("../helpers/asyncHandler");
 const getAllTickets = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, title } = req.query;
 
-  const tickets = await ticketService.getAllTickets({ page, limit, title });
+  const tickets = await ticketService.getAllTickets(
+    { page, limit, title },
+    req.user,
+  );
 
   return res.status(200).json(tickets);
 });

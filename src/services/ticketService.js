@@ -42,16 +42,21 @@ const {
   mapTicketDetails,
 } = require("../helpers/ticketResponse");
 
-const getAllTickets = async ({ page, limit, title }) => {
-  const validatedPagination = validatePagination(page, limit);
-  const validatedFilters = validateTicketFilters({ title });
+const getAllTickets = async (filters, currentUser) => {
+  const validatedPagination = validatePagination(filters.page, filters.limit);
+
+  const validatedFilters = validateTicketFilters({
+    title: filters.title,
+  });
 
   const result = await ticketRepository.findAll({
     ...validatedPagination,
     ...validatedFilters,
+    currentUser,
   });
 
   result.data = result.data.map(addTicketLabels);
+
   return result;
 };
 
@@ -89,6 +94,10 @@ const updateTicketStatus = async (id, statusData, userId) => {
   }
 
   const validatedStatus = validateTicketStatus(statusData);
+
+  if (ticket.status === validatedStatus) {
+    throw new ValidationError("El ticket ya posee ese estado");
+  }
 
   const INVALID_STATUS_TRANSITIONS = {
     CLOSED: [
