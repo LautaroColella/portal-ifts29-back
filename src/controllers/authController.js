@@ -2,19 +2,28 @@ const authService = require("../services/authService");
 
 const asyncHandler = require("../helpers/asyncHandler");
 
-const login = asyncHandler(async (req, res) => {
-  const result = await authService.login(req.body);
-
-  return res.status(200).json(result);
-});
-
 const me = asyncHandler(async (req, res) => {
   const user = await authService.getCurrentUser(req.user.id);
 
   return res.status(200).json(user);
 });
 
+const login = asyncHandler(async (req, res) => {
+  const result = await authService.login(req.body);
+
+  return res.status(200).json(result);
+});
+
+const changePassword = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  await authService.changePassword(userId, req.body);
+
+  return res.sendStatus(204);
+});
+
 module.exports = {
   login,
   me,
+  changePassword,
 };

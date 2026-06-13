@@ -41,6 +41,53 @@ const createUser = async (userData) => {
   });
 };
 
+const updateUserProfile = async (id, profileData) => {
+  const validatedId = validateId(id);
+
+  const user = await userRepository.findById(validatedId);
+
+  if (!user) {
+    throw new NotFoundError("Usuario no encontrado");
+  }
+
+  const updatedUser = await userRepository.updateUser(validatedId, profileData);
+
+  return mapUserDetails(updatedUser);
+};
+
+const updateUserRole = async (id, roleData) => {
+  const validatedId = validateId(id);
+
+  const user = await userRepository.findById(validatedId);
+
+  if (!user) {
+    throw new NotFoundError("Usuario no encontrado");
+  }
+
+  const updatedUser = await userRepository.updateUser(validatedId, {
+    role: roleData.role,
+  });
+
+  return mapUserDetails(updatedUser);
+};
+
+const updateUserStaffSettings = async (id, settingsData) => {
+  const validatedId = validateId(id);
+
+  const user = await userRepository.findById(validatedId);
+
+  if (!user) {
+    throw new NotFoundError("Usuario no encontrado");
+  }
+
+  const updatedUser = await userRepository.updateUser(validatedId, {
+    staffType: settingsData.staffType,
+    responsibleSubcategories: settingsData.responsibleSubcategories,
+  });
+
+  return mapUserDetails(updatedUser);
+};
+
 const deleteUser = async (id) => {
   const validatedId = validateId(id);
 
@@ -57,5 +104,8 @@ module.exports = {
   getAllUsers,
   getUserById,
   createUser,
+  updateUserProfile,
+  updateUserRole,
+  updateUserStaffSettings,
   deleteUser,
 };

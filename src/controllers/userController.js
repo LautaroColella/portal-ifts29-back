@@ -24,6 +24,30 @@ const createUser = asyncHandler(async (req, res) => {
   return res.status(201).json(user);
 });
 
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedUser = await userService.updateUserProfile(id, req.body);
+
+  return res.status(200).json(updatedUser);
+});
+
+const updateUserRole = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedUser = await userService.updateUserRole(id, req.body);
+
+  return res.status(200).json(updatedUser);
+});
+
+const updateUserStaffSettings = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedUser = await userService.updateUserStaffSettings(id, req.body);
+
+  return res.status(200).json(updatedUser);
+});
+
 const deleteUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -36,5 +60,8 @@ module.exports = {
   getAllUsers,
   getUserById,
   createUser,
+  updateUserProfile,
+  updateUserRole,
+  updateUserStaffSettings,
   deleteUser,
 };

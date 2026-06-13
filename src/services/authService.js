@@ -47,7 +47,28 @@ const getCurrentUser = async (userId) => {
   return user;
 };
 
+const changePassword = async (userId, passwordData) => {
+  const { currentPassword, newPassword } = passwordData;
+
+  const user = await userRepository.findByIdWithPassword(userId);
+
+  if (!user) {
+    throw new NotFoundError("Usuario no encontrado");
+  }
+
+  const matches = await bcrypt.compare(currentPassword, user.password);
+
+  if (!matches) {
+    throw new ValidationError("La contraseña actual es incorrecta");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await userRepository.updatePassword(userId, hashedPassword);
+};
+
 module.exports = {
   login,
   getCurrentUser,
+  changePassword,
 };

@@ -44,6 +44,19 @@ const findById = async (id) => {
   });
 };
 
+const findByIdWithPassword = async (id) => {
+  return await getRepository().findOne({
+    where: {
+      id,
+    },
+
+    select: {
+      id: true,
+      password: true,
+    },
+  });
+};
+
 const findByEmail = async (email) => {
   return await getRepository().findOne({
     where: {
@@ -67,6 +80,22 @@ const create = async (userData) => {
   return await repository.save(user);
 };
 
+const updateUser = async (id, updateData) => {
+  const repository = getRepository();
+
+  await repository.update(id, updateData);
+
+  return await findById(id);
+};
+
+const updatePassword = async (id, hashedPassword) => {
+  const repository = getRepository();
+
+  await repository.update(id, {
+    password: hashedPassword,
+  });
+};
+
 const deleteUser = async (id) => {
   const repository = getRepository();
 
@@ -76,7 +105,10 @@ const deleteUser = async (id) => {
 module.exports = {
   findAll,
   create,
-  findByEmail,
   findById,
+  findByIdWithPassword,
+  findByEmail,
+  updateUser,
+  updatePassword,
   deleteUser,
 };
