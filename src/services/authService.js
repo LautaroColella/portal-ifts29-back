@@ -3,10 +3,19 @@ const jwt = require("jsonwebtoken");
 
 const userRepository = require("../repositories/userRepository");
 
+const { validateId } = require("../validators/idValidator");
+const {
+  validateLogin,
+  validateChangePassword,
+  validateRegisterStudent,
+} = require("../validators/userValidator");
+
 const ValidationError = require("../errors/ValidationError");
 const NotFoundError = require("../errors/NotFoundError");
 
-const login = async ({ email, password }) => {
+const login = async (loginData) => {
+  const { email, password } = validateLogin(loginData);
+
   const user = await userRepository.findByEmail(email);
 
   if (!user) {
@@ -37,8 +46,46 @@ const login = async ({ email, password }) => {
   };
 };
 
+const register = async (userData) => {
+  const validatedUser = validateRegisterStudent(userData);
+
+  const existingUserByEmail = await userRepository.findByEmail(
+    validatedUser.email,
+  );
+
+  if (existingUserByEmail) {
+    throw new ValidationError("Ya existe un usuario con ese email");
+  }
+
+  const existingUserByDni = await userRepository.findByDni(validatedUser.dni);
+
+  if (existingUserByDni) {
+    throw new ValidationError("Ya existe un usuario con ese DNI");
+  }
+
+  const hashedPassword = await bcrypt.hash(validatedUser.password, 10);
+
+  const user = await userRepository.create({
+    ...validatedUser,
+    password: hashedPassword,
+    role: "STUDENT",
+    staffType: null,
+    responsibleSubcategories: [],
+  });
+
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+  };
+};
+
 const getCurrentUser = async (userId) => {
-  const user = await userRepository.findById(userId);
+  const validatedId = validateId(userId);
+
+  const user = await userRepository.findById(validatedId);
 
   if (!user) {
     throw new NotFoundError("Usuario no encontrado");
@@ -48,7 +95,7 @@ const getCurrentUser = async (userId) => {
 };
 
 const changePassword = async (userId, passwordData) => {
-  const { currentPassword, newPassword } = passwordData;
+  const { currentPassword, newPassword } = validateChangePassword(passwordData);
 
   const user = await userRepository.findByIdWithPassword(userId);
 
@@ -69,6 +116,7 @@ const changePassword = async (userId, passwordData) => {
 
 module.exports = {
   login,
+  register,
   getCurrentUser,
   changePassword,
 };

@@ -4,8 +4,23 @@ const userRepository = require("../repositories/userRepository");
 
 const { validatePagination } = require("../validators/paginationValidator");
 const { validateId } = require("../validators/idValidator");
+const {
+  validateFirstName,
+  validateLastName,
+  validateDni,
+  validateEmail,
+  validatePassword,
+  validateRole,
+  validateStaffType,
+  validateResponsibleSubcategories,
+  validateUserConfiguration,
+  validateUpdateUserProfile,
+  validateUpdateUserRole,
+  validateUpdateUserStaffSettings,
+} = require("../validators/userValidator");
 
 const NotFoundError = require("../errors/NotFoundError");
+const ValidationError = require("../errors/ValidationError");
 
 const { mapUserDetails } = require("../helpers/userDetails");
 
@@ -34,9 +49,39 @@ const getUserById = async (id) => {
 };
 
 const createUser = async (userData) => {
-  const hashedPassword = await bcrypt.hash(userData.password, 10);
+  const validatedUser = {
+    firstName: validateFirstName(userData.firstName),
+    lastName: validateLastName(userData.lastName),
+    dni: validateDni(userData.dni),
+    email: validateEmail(userData.email),
+    password: validatePassword(userData.password),
+    role: validateRole(userData.role),
+    staffType: validateStaffType(userData.staffType),
+    responsibleSubcategories: validateResponsibleSubcategories(
+      userData.responsibleSubcategories,
+    ),
+  };
+
+  validateUserConfiguration(validatedUser);
+
+  const existingUserByEmail = await userRepository.findByEmail(
+    validatedUser.email,
+  );
+
+  if (existingUserByEmail) {
+    throw new ValidationError("Ya existe un usuario con ese email");
+  }
+
+  const existingUserByDni = await userRepository.findByDni(validatedUser.dni);
+
+  if (existingUserByDni) {
+    throw new ValidationError("Ya existe un usuario con ese DNI");
+  }
+
+  const hashedPassword = await bcrypt.hash(validatedUser.password, 10);
+
   return await userRepository.create({
-    ...userData,
+    ...validatedUser,
     password: hashedPassword,
   });
 };
@@ -50,7 +95,22 @@ const updateUserProfile = async (id, profileData) => {
     throw new NotFoundError("Usuario no encontrado");
   }
 
-  const updatedUser = await userRepository.updateUser(validatedId, profileData);
+  const validatedProfile = validateUpdateUserProfile(profileData);
+
+  if (validatedProfile.email) {
+    const existingUser = await userRepository.findByEmail(
+      validatedProfile.email,
+    );
+
+    if (existingUser && existingUser.id !== validatedId) {
+      throw new ValidationError("Ya existe un usuario con ese email");
+    }
+  }
+
+  const updatedUser = await userRepository.updateUser(
+    validatedId,
+    validatedProfile,
+  );
 
   return mapUserDetails(updatedUser);
 };
@@ -64,9 +124,12 @@ const updateUserRole = async (id, roleData) => {
     throw new NotFoundError("Usuario no encontrado");
   }
 
-  const updatedUser = await userRepository.updateUser(validatedId, {
-    role: roleData.role,
-  });
+  const validatedRole = validateUpdateUserRole(roleData);
+
+  const updatedUser = await userRepository.updateUser(
+    validatedId,
+    validatedRole,
+  );
 
   return mapUserDetails(updatedUser);
 };
@@ -80,10 +143,23 @@ const updateUserStaffSettings = async (id, settingsData) => {
     throw new NotFoundError("Usuario no encontrado");
   }
 
-  const updatedUser = await userRepository.updateUser(validatedId, {
-    staffType: settingsData.staffType,
-    responsibleSubcategories: settingsData.responsibleSubcategories,
+  if (user.role !== "STAFF") {
+    throw new ValidationError(
+      "Solo los usuarios STAFF pueden tener configuración de personal",
+    );
+  }
+
+  const validatedSettings = validateUpdateUserStaffSettings(settingsData);
+
+  validateUserConfiguration({
+    role: user.role,
+    ...validatedSettings,
   });
+
+  const updatedUser = await userRepository.updateUser(
+    validatedId,
+    validatedSettings,
+  );
 
   return mapUserDetails(updatedUser);
 };

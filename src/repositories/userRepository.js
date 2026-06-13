@@ -72,6 +72,19 @@ const findByEmail = async (email) => {
   });
 };
 
+const findByDni = async (dni) => {
+  return await getRepository().findOne({
+    where: {
+      dni,
+    },
+
+    select: {
+      id: true,
+      dni: true,
+    },
+  });
+};
+
 const create = async (userData) => {
   const repository = getRepository();
 
@@ -108,6 +121,7 @@ module.exports = {
   findById,
   findByIdWithPassword,
   findByEmail,
+  findByDni,
   updateUser,
   updatePassword,
   deleteUser,

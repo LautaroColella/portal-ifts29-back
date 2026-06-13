@@ -18,12 +18,12 @@ const authMiddleware = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/", getAllTickets);
+router.get("/", authMiddleware, getAllTickets);
 router.get("/:id", authMiddleware, getTicketById);
 router.post("/", authMiddleware, createTicket);
 router.patch("/:id/status", authMiddleware, updateTicketStatus);
 router.patch("/:id/assignee", authMiddleware, updateTicketAssignee);
-router.delete("/:id", deleteTicket);
+router.delete("/:id", authMiddleware, deleteTicket);
 
 router.get("/:id/comments", authMiddleware, getAllComments);
 router.post("/:id/comments", authMiddleware, createComment);
