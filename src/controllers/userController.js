@@ -49,9 +49,7 @@ const updateUserStaffSettings = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  await userService.deleteUser(id);
+  await userService.deleteUser(req.params.id, req.user.id);
 
   return res.status(204).send();
 });

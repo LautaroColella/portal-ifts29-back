@@ -11,15 +11,28 @@ const {
 } = require("../controllers/userController");
 
 const authMiddleware = require("../middlewares/auth");
+const authorizeRoles = require("../middlewares/role");
+const { authorizeSelfOrAdmin } = require("../middlewares/ownership");
 
 const router = express.Router();
 
-router.get("/", authMiddleware, getAllUsers);
-router.get("/:id", authMiddleware, getUserById);
-router.post("/", authMiddleware, createUser);
-router.patch("/:id", authMiddleware, updateUserProfile);
-router.patch("/:id/role", authMiddleware, updateUserRole);
-router.patch("/:id/staff-settings", authMiddleware, updateUserStaffSettings);
-router.delete("/:id", authMiddleware, deleteUser);
+router.get("/", authMiddleware, authorizeRoles("ADMIN"), getAllUsers);
+router.post("/", authMiddleware, authorizeRoles("ADMIN"), createUser);
+router.patch(
+  "/:id/role",
+  authMiddleware,
+  authorizeRoles("ADMIN"),
+  updateUserRole,
+);
+router.patch(
+  "/:id/staff-settings",
+  authMiddleware,
+  authorizeRoles("ADMIN"),
+  updateUserStaffSettings,
+);
+router.delete("/:id", authMiddleware, authorizeRoles("ADMIN"), deleteUser);
+
+router.get("/:id", authMiddleware, authorizeSelfOrAdmin, getUserById);
+router.patch("/:id", authMiddleware, authorizeSelfOrAdmin, updateUserProfile);
 
 module.exports = router;

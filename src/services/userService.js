@@ -21,6 +21,7 @@ const {
 
 const NotFoundError = require("../errors/NotFoundError");
 const ValidationError = require("../errors/ValidationError");
+const ForbiddenError = require("../errors/ForbiddenError");
 
 const { mapUserDetails } = require("../helpers/userDetails");
 
@@ -164,13 +165,17 @@ const updateUserStaffSettings = async (id, settingsData) => {
   return mapUserDetails(updatedUser);
 };
 
-const deleteUser = async (id) => {
+const deleteUser = async (id, performedById) => {
   const validatedId = validateId(id);
 
   const user = await userRepository.findById(validatedId);
 
   if (!user) {
     throw new NotFoundError("Usuario no encontrado");
+  }
+
+  if (validatedId === performedById) {
+    throw new ForbiddenError("No puede eliminar su propio usuario");
   }
 
   await userRepository.deleteUser(validatedId);
