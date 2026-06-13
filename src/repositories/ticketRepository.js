@@ -134,6 +134,23 @@ const deleteTicket = async (id) => {
   await ticketRepository.delete(id);
 };
 
+const countAssignedActiveTickets = async (staffId) => {
+  return await getRepository()
+    .createQueryBuilder("ticket")
+    .where("ticket.assignedToId = :staffId", {
+      staffId,
+    })
+    .andWhere("ticket.status IN (:...statuses)", {
+      statuses: [
+        "OPEN",
+        "IN_PROGRESS",
+        "WAITING_FOR_STUDENT",
+        "WAITING_FOR_THIRD_PARTY",
+      ],
+    })
+    .getCount();
+};
+
 module.exports = {
   findAll,
   findById,
@@ -141,4 +158,5 @@ module.exports = {
   updateStatus,
   updateAssignee,
   deleteTicket,
+  countAssignedActiveTickets,
 };

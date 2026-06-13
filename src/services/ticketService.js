@@ -75,11 +75,56 @@ const getTicketById = async (id) => {
 const createTicket = async (ticketData, userId) => {
   const validatedTicket = validateCreateTicket(ticketData);
 
-  const createdTicket = await ticketRepository.create(validatedTicket, userId);
+  const candidates = await userRepository.findResponsibleStaff(
+    validatedTicket.subcategory,
+  );
+
+  let assignedStaff = null;
+
+  if (candidates.length > 0) {
+    const workloads = await Promise.all(
+      candidates.map(async (staff) => ({
+        staff,
+
+        activeTickets: await ticketRepository.countAssignedActiveTickets(
+          staff.id,
+        ),
+      })),
+    );
+
+    workloads.sort((a, b) => {
+      if (a.activeTickets !== b.activeTickets) {
+        return a.activeTickets - b.activeTickets;
+      }
+
+      return a.staff.id - b.staff.id;
+    });
+
+    assignedStaff = workloads[0].staff;
+  }
+
+  const createdTicket = await ticketRepository.create(
+    {
+      ...validatedTicket,
+      assignedTo: assignedStaff ? { id: assignedStaff.id } : null,
+    },
+    userId,
+  );
 
   await ticketHistoryRepository.createHistoryEntry(
     createTicketCreatedHistory(createdTicket.id, userId),
   );
+
+  if (assignedStaff) {
+    await ticketHistoryRepository.createHistoryEntry(
+      createAssignedChangedHistory(
+        createdTicket.id,
+        userId,
+        null,
+        assignedStaff.id,
+      ),
+    );
+  }
 
   return createdTicket;
 };

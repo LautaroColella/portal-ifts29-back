@@ -115,6 +115,19 @@ const deleteUser = async (id) => {
   await repository.delete(id);
 };
 
+const findResponsibleStaff = async (subcategory) => {
+  return await getRepository()
+    .createQueryBuilder("user")
+    .where("user.role = :role", {
+      role: "STAFF",
+    })
+    .andWhere("user.responsibleSubcategories LIKE :subcategory", {
+      subcategory: `%${subcategory}%`,
+    })
+    .orderBy("user.id", "ASC")
+    .getMany();
+};
+
 module.exports = {
   findAll,
   create,
@@ -125,4 +138,5 @@ module.exports = {
   updateUser,
   updatePassword,
   deleteUser,
+  findResponsibleStaff,
 };
