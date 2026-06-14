@@ -14,6 +14,10 @@ const findAllByTicketId = async (ticketId) => {
       },
     },
 
+    relations: {
+      author: true,
+    },
+
     order: {
       createdAt: "ASC",
     },

@@ -106,13 +106,12 @@ module.exports = new EntitySchema({
   },
 
   relations: {
-    // !createdBy and assignedTo must NOT be nullable. Change to false when User module is implemented.
-    // !By being nullable we don't force FK integrity and just skip the field in the crud
     createdBy: {
       target: "User",
       type: "many-to-one",
       joinColumn: true,
-      nullable: true,
+      nullable: false,
+      onDelete: "CASCADE",
     },
 
     assignedTo: {
@@ -120,6 +119,7 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       joinColumn: true,
       nullable: true,
+      onDelete: "SET NULL",
     },
 
     comments: {

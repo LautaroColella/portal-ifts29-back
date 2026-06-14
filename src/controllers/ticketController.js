@@ -4,7 +4,10 @@ const asyncHandler = require("../helpers/asyncHandler");
 const getAllTickets = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, title } = req.query;
 
-  const tickets = await ticketService.getAllTickets({ page, limit, title });
+  const tickets = await ticketService.getAllTickets(
+    { page, limit, title },
+    req.user,
+  );
 
   return res.status(200).json(tickets);
 });
@@ -18,7 +21,7 @@ const getTicketById = asyncHandler(async (req, res) => {
 });
 
 const createTicket = asyncHandler(async (req, res) => {
-  const ticket = await ticketService.createTicket(req.body);
+  const ticket = await ticketService.createTicket(req.body, req.user.id);
 
   return res.status(201).json(ticket);
 });
@@ -26,7 +29,23 @@ const createTicket = asyncHandler(async (req, res) => {
 const updateTicketStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const updatedTicket = await ticketService.updateTicketStatus(id, req.body);
+  const updatedTicket = await ticketService.updateTicketStatus(
+    id,
+    req.body,
+    req.user.id,
+  );
+
+  return res.status(200).json(updatedTicket);
+});
+
+const updateTicketAssignee = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const updatedTicket = await ticketService.updateTicketAssignee(
+    id,
+    req.body,
+    req.user.id,
+  );
 
   return res.status(200).json(updatedTicket);
 });
@@ -50,7 +69,7 @@ const getAllComments = asyncHandler(async (req, res) => {
 const createComment = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const comment = await ticketService.createComment(id, req.body);
+  const comment = await ticketService.createComment(id, req.body, req.user.id);
 
   return res.status(201).json(comment);
 });
@@ -66,7 +85,7 @@ const getAllMessages = asyncHandler(async (req, res) => {
 const createMessage = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const message = await ticketService.createMessage(id, req.body);
+  const message = await ticketService.createMessage(id, req.body, req.user.id);
 
   return res.status(201).json(message);
 });
@@ -84,6 +103,7 @@ module.exports = {
   getTicketById,
   createTicket,
   updateTicketStatus,
+  updateTicketAssignee,
   deleteTicket,
   getAllComments,
   createComment,
