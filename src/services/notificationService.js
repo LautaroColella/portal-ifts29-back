@@ -1,40 +1,42 @@
 const notificationRepository = require("../repositories/notificationRepository");
 
+const { validateId } = require("../validators/idValidator");
+const {
+  validateNotificationFilters,
+} = require("../validators/notificationValidation");
+
 const NotFoundError = require("../errors/NotFoundError");
-const ValidationError = require("../errors/ValidationError");
 
 const createNotification = async (data) => {
-  return await notificationRepository.createNotification(data);
+  return await notificationRepository.create(data);
 };
 
-const getUserNotifications = async (userId, filters = {}) => {
-  if (!userId) {
-    throw new ValidationError("userId es requerido");
-  }
+const getUserNotifications = async (userId, filters) => {
+  const validatedUserId = validateId(userId);
+  const validatedFilters = validateNotificationFilters(filters);
 
-  if (filters.unreadOnly) {
-    return await notificationRepository.findAllUnreadByUserId(userId);
-  }
-
-  return await notificationRepository.findAllByUserId(userId);
+  return await notificationRepository.findAllByUserId(
+    validatedUserId,
+    validatedFilters,
+  );
 };
 
 const markAsRead = async (id) => {
-  const notification = await notificationRepository.markAsRead(id);
+  const validatedId = validateId(id);
+
+  const notification = await notificationRepository.findById(validatedId);
 
   if (!notification) {
     throw new NotFoundError("Notificación no encontrada");
   }
 
-  return notification;
+  return await notificationRepository.markAsRead(validatedId);
 };
 
 const markAllAsRead = async (userId) => {
-  if (!userId) {
-    throw new ValidationError("userId es requerido");
-  }
+  const validatedUserId = validateId(userId);
 
-  await notificationRepository.markAllAsRead(userId);
+  await notificationRepository.markAllAsRead(validatedUserId);
 };
 
 module.exports = {

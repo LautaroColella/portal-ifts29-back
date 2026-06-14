@@ -31,6 +31,7 @@ const ValidationError = require("../errors/ValidationError");
 const {
   createTicketCreatedHistory,
   createStatusChangedHistory,
+  createAssignedChangedHistory,
   createCommentAddedHistory,
   createMessageAddedHistory,
 } = require("../helpers/ticketHistory");
@@ -122,9 +123,10 @@ const createTicket = async (ticketData, userId) => {
         createdTicket.id,
         userId,
         null,
-        assignedStaff.id,
+        `${assignedStaff.firstName} ${assignedStaff.lastName}`,
       ),
     );
+  }
   if (createdTicket.assignedTo) {
     await notificationService.createNotification({
       message: `Nuevo ticket #${createdTicket.id} asignado: ${createdTicket.title}`,
@@ -134,7 +136,11 @@ const createTicket = async (ticketData, userId) => {
     });
   }
 
-  if (createdTicket.createdBy && (!createdTicket.assignedTo || createdTicket.createdBy.id !== createdTicket.assignedTo.id)) {
+  if (
+    createdTicket.createdBy &&
+    (!createdTicket.assignedTo ||
+      createdTicket.createdBy.id !== createdTicket.assignedTo.id)
+  ) {
     await notificationService.createNotification({
       message: `Nuevo ticket #${createdTicket.id} creado: ${createdTicket.title}`,
       type: "TICKET_CREATED",
@@ -266,7 +272,10 @@ const updateTicketAssignee = async (id, assigneeData, performedById) => {
     });
   }
 
-  if (ticket.assignedTo && (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)) {
+  if (
+    ticket.assignedTo &&
+    (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)
+  ) {
     await notificationService.createNotification({
       message: `Ticket #${validatedId} cambió estado a ${validatedStatus}`,
       type: "STATUS_CHANGED",
@@ -340,7 +349,10 @@ const createComment = async (id, commentData, userId) => {
     });
   }
 
-  if (ticket.createdBy && (!ticket.assignedTo || ticket.createdBy.id !== ticket.assignedTo.id)) {
+  if (
+    ticket.createdBy &&
+    (!ticket.assignedTo || ticket.createdBy.id !== ticket.assignedTo.id)
+  ) {
     await notificationService.createNotification({
       message: `Nuevo comentario en ticket #${validatedId}`,
       type: "COMMENT_ADDED",
@@ -401,7 +413,10 @@ const createMessage = async (id, messageData, userId) => {
     });
   }
 
-  if (ticket.assignedTo && (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)) {
+  if (
+    ticket.assignedTo &&
+    (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)
+  ) {
     await notificationService.createNotification({
       message: `Nuevo mensaje en ticket #${validatedId}`,
       type: "MESSAGE_ADDED",

@@ -4,15 +4,21 @@ const getRepository = () => {
   return AppDataSource.getRepository("Notification");
 };
 
-const findAllByUserId = async (userId) => {
-  const notificationRepository = getRepository();
+const findAllByUserId = async (userId, filters = {}) => {
+  const repository = getRepository();
 
-  return await notificationRepository.find({
-    where: {
-      recipient: {
-        id: userId,
-      },
+  const where = {
+    recipient: {
+      id: userId,
     },
+  };
+
+  if (filters.unreadOnly) {
+    where.read = false;
+  }
+
+  return await repository.find({
+    where,
 
     order: {
       createdAt: "DESC",
@@ -24,33 +30,24 @@ const findAllByUserId = async (userId) => {
   });
 };
 
-const findAllUnreadByUserId = async (userId) => {
-  const notificationRepository = getRepository();
-
-  return await notificationRepository.find({
+const findById = async (id) => {
+  return await getRepository().findOne({
     where: {
-      recipient: {
-        id: userId,
-      },
-      read: false,
-    },
-
-    order: {
-      createdAt: "DESC",
+      id,
     },
 
     relations: {
-      ticket: true,
+      recipient: true,
     },
   });
 };
 
-const createNotification = async (notificationData) => {
-  const notificationRepository = getRepository();
+const create = async (notificationData) => {
+  const repository = getRepository();
 
-  const notification = notificationRepository.create(notificationData);
+  const notification = repository.create(notificationData);
 
-  return await notificationRepository.save(notification);
+  return await repository.save(notification);
 };
 
 const markAsRead = async (id) => {
@@ -68,14 +65,14 @@ const markAllAsRead = async (userId) => {
 
   await notificationRepository.update(
     { recipient: { id: userId } },
-    { read: true }
+    { read: true },
   );
 };
 
 module.exports = {
   findAllByUserId,
-  findAllUnreadByUserId,
-  createNotification,
+  findById,
+  create,
   markAsRead,
   markAllAsRead,
 };
