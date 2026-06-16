@@ -11,6 +11,11 @@ const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
+
   synchronize: process.env.NODE_ENV === "development",
   logging: process.env.DEBUG === "true",
 
