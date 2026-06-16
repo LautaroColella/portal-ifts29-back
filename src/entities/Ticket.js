@@ -54,7 +54,6 @@ module.exports = new EntitySchema({
         // Institutional
         "SUBJECT_EQUIVALENCY_REQUEST",
         "GRADE_RECORD_CORRECTION_REQUEST",
-        "NEW_STUDENT_CERTIFICATE_REQUEST",
         "EXAM_CERTIFICATE_REQUEST",
         "DEGREE_PROCESS_REQUEST",
         "CLASS_SECTION_CHANGE_REQUEST",
@@ -107,13 +106,12 @@ module.exports = new EntitySchema({
   },
 
   relations: {
-    // !createdBy and assignedTo must NOT be nullable. Change to false when User module is implemented.
-    // !By being nullable we don't force FK integrity and just skip the field in the crud
     createdBy: {
       target: "User",
       type: "many-to-one",
       joinColumn: true,
-      nullable: true,
+      nullable: false,
+      onDelete: "CASCADE",
     },
 
     assignedTo: {
@@ -121,6 +119,7 @@ module.exports = new EntitySchema({
       type: "many-to-one",
       joinColumn: true,
       nullable: true,
+      onDelete: "SET NULL",
     },
 
     comments: {

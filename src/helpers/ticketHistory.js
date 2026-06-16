@@ -1,4 +1,4 @@
-const createTicketCreatedHistory = (ticketId) => ({
+const createTicketCreatedHistory = (ticketId, performedById) => ({
   action: "TICKET_CREATED",
   oldValue: null,
   newValue: null,
@@ -8,11 +8,15 @@ const createTicketCreatedHistory = (ticketId) => ({
     id: ticketId,
   },
 
-  // !PLACEHOLDER
-  performedBy: null,
+  performedBy: {
+    id: performedById,
+  },
 });
 
-const createStatusChangedHistory = ({ ticketId, oldStatus, newStatus }) => ({
+const createStatusChangedHistory = (
+  { ticketId, oldStatus, newStatus },
+  performedById,
+) => ({
   action: "STATUS_CHANGED",
   oldValue: oldStatus,
   newValue: newStatus,
@@ -22,11 +26,32 @@ const createStatusChangedHistory = ({ ticketId, oldStatus, newStatus }) => ({
     id: ticketId,
   },
 
-  // !PLACEHOLDER
-  performedBy: null,
+  performedBy: {
+    id: performedById,
+  },
 });
 
-const createCommentAddedHistory = (ticketId) => ({
+const createAssignedChangedHistory = (
+  ticketId,
+  performedById,
+  oldAssigneeName,
+  newAssigneeName,
+) => ({
+  action: "ASSIGNED_CHANGED",
+  oldValue: oldAssigneeName,
+  newValue: newAssigneeName,
+  description: `Responsable cambiado de ${oldAssigneeName ?? "sin asignar"} a ${newAssigneeName}`,
+
+  ticket: {
+    id: ticketId,
+  },
+
+  performedBy: {
+    id: performedById,
+  },
+});
+
+const createCommentAddedHistory = (ticketId, performedById) => ({
   action: "COMMENT_ADDED",
   oldValue: null,
   newValue: null,
@@ -36,11 +61,12 @@ const createCommentAddedHistory = (ticketId) => ({
     id: ticketId,
   },
 
-  // !PLACEHOLDER
-  performedBy: null,
+  performedBy: {
+    id: performedById,
+  },
 });
 
-const createMessageAddedHistory = (ticketId) => ({
+const createMessageAddedHistory = (ticketId, performedById) => ({
   action: "MESSAGE_ADDED",
   oldValue: null,
   newValue: null,
@@ -50,13 +76,15 @@ const createMessageAddedHistory = (ticketId) => ({
     id: ticketId,
   },
 
-  // !PLACEHOLDER
-  performedBy: null,
+  performedBy: {
+    id: performedById,
+  },
 });
 
 module.exports = {
   createTicketCreatedHistory,
   createStatusChangedHistory,
+  createAssignedChangedHistory,
   createCommentAddedHistory,
   createMessageAddedHistory,
 };

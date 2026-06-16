@@ -9,6 +9,9 @@ const notFound = require("./middlewares/notFound");
 const AppDataSource = require("./config/data-source");
 const ticketRoutes = require("./routes/ticketRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -17,6 +20,9 @@ app.use(express.json());
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // * The route not found middleware MUST be after ALL routes
 app.use(notFound);

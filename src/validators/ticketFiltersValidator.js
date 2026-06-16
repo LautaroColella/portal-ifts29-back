@@ -26,8 +26,8 @@ const validateTicketFilters = (filters) => {
       throw new ValidationError("El título no puede estar vacío");
     }
 
-    if (sanitizedTitle.length > 100) {
-      throw new ValidationError("El título no puede superar 100 caracteres");
+    if (sanitizedTitle.length > 50) {
+      throw new ValidationError("El título no puede superar 50 caracteres");
     }
 
     sanitizedFilters.title = sanitizedTitle;
