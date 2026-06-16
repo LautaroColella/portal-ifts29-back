@@ -30,7 +30,7 @@ app.use(notFound);
 // * The error handling middleware MUST be the LAST middleware
 app.use(errorHandler);
 
-const PORT = process.env.SERVER_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 AppDataSource.initialize()
   .then(() => {
