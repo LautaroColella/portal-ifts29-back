@@ -105,8 +105,12 @@ const countTicketsByAssignee = async (filters) => {
     .createQueryBuilder("ticket")
     .leftJoin("ticket.assignedTo", "assignedTo")
     .select("assignedTo.id", "assigneeId")
+    .addSelect('assignedTo.firstName', 'firstName')
+    .addSelect('assignedTo.lastName', 'lastName')
     .addSelect("COUNT(ticket.id)", "count")
     .groupBy("assignedTo.id")
+    .addGroupBy("assignedTo.firstName")
+    .addGroupBy("assignedTo.lastName")
     .orderBy("count", "DESC");
 
   applyDateFilters(query, filters);
@@ -114,7 +118,7 @@ const countTicketsByAssignee = async (filters) => {
   const rows = await query.getRawMany();
 
   return rows.map((row) => ({
-    assignee: row.assigneeId ? `User ${row.assigneeId}` : "UNASSIGNED",
+    assignee: row.firstName ? `${row.firstName} ${row.lastName}` : "Sin asignar",
     count: Number(row.count),
   }));
 };
@@ -188,9 +192,13 @@ const getTopResolversByClosedTickets = async (filters) => {
     .createQueryBuilder("ticket")
     .leftJoin("ticket.assignedTo", "assignedTo")
     .select("assignedTo.id", "assigneeId")
+    .addSelect('assignedTo.firstName', 'firstName')
+    .addSelect('assignedTo.lastName', 'lastName')
     .addSelect("COUNT(ticket.id)", "closedTickets")
     .where("ticket.status = :status", { status: "CLOSED" })
     .groupBy("assignedTo.id")
+    .addGroupBy("assignedTo.firstName")
+    .addGroupBy("assignedTo.lastName")
     .orderBy("COUNT(ticket.id)", "DESC")
     .limit(5);
 
@@ -199,7 +207,7 @@ const getTopResolversByClosedTickets = async (filters) => {
   const rows = await query.getRawMany();
 
   return rows.map((row) => ({
-    responsible: row.assigneeId ? `User ${row.assigneeId}` : "UNASSIGNED",
+    responsible: row.firstName ? `${row.firstName} ${row.lastName}` : "Sin asignar",
     closedTickets: Number(row.closedTickets),
   }));
 };
