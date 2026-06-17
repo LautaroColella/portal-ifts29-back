@@ -15,7 +15,23 @@ const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : [];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Bloqueado por CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 
 app.use("/api/tickets", ticketRoutes);
@@ -32,12 +48,19 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-AppDataSource.initialize()
-  .then(() => {
+let dbInitialized = false;
+
+const initializeDatabase = async () => {
+  if (!dbInitialized && !AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+    dbInitialized = true;
     console.log("Database connected");
-
     if (process.env.DEBUG === "true") console.log("---DEBUG MODE---");
+  }
+};
 
+initializeDatabase()
+  .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
@@ -46,3 +69,5 @@ AppDataSource.initialize()
     console.error("Database initialization failed");
     console.error(err);
   });
+
+module.exports = app;
