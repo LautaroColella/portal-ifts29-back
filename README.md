@@ -71,16 +71,16 @@ psql -U postgres -d portal_ifts29 -f scripts/seed.sql
 
 El seed carga 12 usuarios, 30 reclamos de ejemplo con comentarios, mensajes, historial y notificaciones.
 
-**Credenciales de prueba** (solo para desarrollo local):
+**Credenciales de prueba** (contraseña: `Password123!` para todos):
 
-| Email | Contraseña | Rol |
-|---|---|---|
-| `admin@admin.com` | `admin` | ADMIN |
-| `management@management.com` | `management` | MANAGEMENT |
-| `staff@staff.com` | `staff` | STAFF (Tutor) |
-| `student@student.com` | `student` | STUDENT |
+| Email | Rol |
+|---|---|
+| `admin@admin.com` | ADMIN |
+| `management@management.com` | MANAGEMENT |
+| `staff@staff.com` | STAFF (Tutor) |
+| `student@student.com` | STUDENT |
 
-Usuarios adicionales: `staff2@staff.com`, `staff.bedel@staff.com`, `staff.tech@staff.com`, `staff.coord@staff.com`, `student2@student.com` a `student5@student.com`. Todos usan como contraseña el nombre de su rol en minúscula.
+Usuarios adicionales: `staff2@staff.com`, `staff.bedel@staff.com`, `staff.tech@staff.com`, `staff.coord@staff.com`, `student2@student.com` a `student5@student.com`. Todos usan la misma contraseña `Password123!`.
 
 ### 6. Iniciar el servidor
 

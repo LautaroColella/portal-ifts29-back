@@ -4,13 +4,7 @@
 -- Ejecutar después de que TypeORM haya creado las tablas (synchronize: true).
 -- Uso: psql -U postgres -d portal_ifts29 -f scripts/seed.sql
 --
--- Usuarios principales y sus contraseñas:
---   admin@admin.com            → admin
---   management@management.com  → management
---   staff@staff.com            → staff
---   student@student.com        → student
---
--- Usuarios adicionales: misma contraseña que su rol
+-- Contraseña de todos los usuarios: Password123!
 -- ============================================================
 
 -- Limpiar datos existentes (en orden por dependencias)
@@ -19,82 +13,79 @@ TRUNCATE TABLE notifications, ticket_history, messages, comments, tickets, users
 -- ============================================================
 -- USUARIOS
 -- ============================================================
--- Hashes bcrypt pre-generados (10 salt rounds):
---   "admin"      → $2b$10$AsWc8sdrSQgkOUVh3HKX7.Mx9.gLck/BDa0nUwAxZlBo/tLO/yA3K
---   "management" → $2b$10$HyojZfNAbxvLelDm1s9jIe0hD6DDQalPdYCKHGtu6qFWtPuZvhUO6
---   "staff"      → $2b$10$E4dwnhHnONYMDRWQ0TAP3eVZKp7c10CTDz/8/HtCnD.3dhyO.qwZG
---   "student"    → $2b$10$yt9742O5hamqzx8zRBFrfegAoDY8fFaU6VwryMUvO19fljTupfbj2
+-- Hash bcrypt pre-generado (10 salt rounds):
+--   "Password123!" → $2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC
 
 INSERT INTO users (id, "firstName", "lastName", dni, email, password, role, "staffType", "responsibleSubcategories", "createdAt", "updatedAt") VALUES
 -- ADMIN (id=1)
 (1, 'Carlos', 'Rodríguez', '30111222', 'admin@admin.com',
- '$2b$10$AsWc8sdrSQgkOUVh3HKX7.Mx9.gLck/BDa0nUwAxZlBo/tLO/yA3K',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'ADMIN', NULL, NULL,
  '2025-01-05 08:00:00', '2025-01-05 08:00:00'),
 
 -- MANAGEMENT (id=2)
 (2, 'Patricia', 'Gómez', '28555666', 'management@management.com',
- '$2b$10$HyojZfNAbxvLelDm1s9jIe0hD6DDQalPdYCKHGtu6qFWtPuZvhUO6',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'MANAGEMENT', NULL, NULL,
  '2025-01-06 09:00:00', '2025-01-06 09:00:00'),
 
 -- STAFF - Tutor académico (id=3)
 (3, 'Roberto', 'García', '32444555', 'staff@staff.com',
- '$2b$10$E4dwnhHnONYMDRWQ0TAP3eVZKp7c10CTDz/8/HtCnD.3dhyO.qwZG',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STAFF', 'TUTOR', 'GRADE_ISSUE,EXAM_ISSUE,CORRELATIVITY_ISSUE,SUBJECT_CONTENT_ISSUE',
  '2025-01-10 10:00:00', '2025-01-10 10:00:00'),
 
 -- STAFF - Tutor académico 2 (id=4)
 (4, 'Laura', 'Sánchez', '31777888', 'staff2@staff.com',
- '$2b$10$E4dwnhHnONYMDRWQ0TAP3eVZKp7c10CTDz/8/HtCnD.3dhyO.qwZG',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STAFF', 'TUTOR', 'GRADE_ISSUE,EXAM_ISSUE,SUBJECT_CONTENT_ISSUE',
  '2025-01-11 11:00:00', '2025-01-11 11:00:00'),
 
 -- STAFF - Bedel institucional (id=5)
 (5, 'Sofía', 'Ramírez', '33222111', 'staff.bedel@staff.com',
- '$2b$10$E4dwnhHnONYMDRWQ0TAP3eVZKp7c10CTDz/8/HtCnD.3dhyO.qwZG',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STAFF', 'BEDEL', 'SUBJECT_EQUIVALENCY_REQUEST,GRADE_RECORD_CORRECTION_REQUEST,EXAM_CERTIFICATE_REQUEST,DEGREE_PROCESS_REQUEST,CLASS_SECTION_CHANGE_REQUEST',
  '2025-01-12 08:30:00', '2025-01-12 08:30:00'),
 
 -- STAFF - Soporte técnico (id=6)
 (6, 'Diego', 'Herrera', '34666777', 'staff.tech@staff.com',
- '$2b$10$E4dwnhHnONYMDRWQ0TAP3eVZKp7c10CTDz/8/HtCnD.3dhyO.qwZG',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STAFF', 'TECH_SUPPORT', 'MOODLE_PROBLEM,SIU_PROBLEM,WEBSITE_ERROR',
  '2025-01-13 09:00:00', '2025-01-13 09:00:00'),
 
 -- STAFF - Coordinador (id=7)
 (7, 'Miguel', 'Torres', '29888999', 'staff.coord@staff.com',
- '$2b$10$E4dwnhHnONYMDRWQ0TAP3eVZKp7c10CTDz/8/HtCnD.3dhyO.qwZG',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STAFF', 'COORDINATOR', 'GENERAL_INQUIRY',
  '2025-01-14 10:00:00', '2025-01-14 10:00:00'),
 
 -- STUDENT (id=8)
 (8, 'María', 'López', '40123456', 'student@student.com',
- '$2b$10$yt9742O5hamqzx8zRBFrfegAoDY8fFaU6VwryMUvO19fljTupfbj2',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STUDENT', NULL, NULL,
  '2025-02-01 14:00:00', '2025-02-01 14:00:00'),
 
 -- STUDENT (id=9)
 (9, 'Juan', 'Pérez', '41234567', 'student2@student.com',
- '$2b$10$yt9742O5hamqzx8zRBFrfegAoDY8fFaU6VwryMUvO19fljTupfbj2',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STUDENT', NULL, NULL,
  '2025-02-05 15:00:00', '2025-02-05 15:00:00'),
 
 -- STUDENT (id=10)
 (10, 'Ana', 'Martínez', '42345678', 'student3@student.com',
- '$2b$10$yt9742O5hamqzx8zRBFrfegAoDY8fFaU6VwryMUvO19fljTupfbj2',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STUDENT', NULL, NULL,
  '2025-02-10 10:00:00', '2025-02-10 10:00:00'),
 
 -- STUDENT (id=11)
 (11, 'Luis', 'Fernández', '43456789', 'student4@student.com',
- '$2b$10$yt9742O5hamqzx8zRBFrfegAoDY8fFaU6VwryMUvO19fljTupfbj2',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STUDENT', NULL, NULL,
  '2025-02-15 11:00:00', '2025-02-15 11:00:00'),
 
 -- STUDENT (id=12)
 (12, 'Camila', 'Ruiz', '44567890', 'student5@student.com',
- '$2b$10$yt9742O5hamqzx8zRBFrfegAoDY8fFaU6VwryMUvO19fljTupfbj2',
+ '$2b$10$BuIUsgft/Z4f3zekEIaziuCGWUtEhutdj0yJ0FcspLvTMAku3YyQC',
  'STUDENT', NULL, NULL,
  '2025-03-01 09:00:00', '2025-03-01 09:00:00');
 
@@ -689,20 +680,20 @@ SELECT setval('notifications_id_seq', 42);
 -- ============================================================
 -- FIN DEL SEED — 12 usuarios, 30 tickets, 17 comentarios, 27 mensajes, 102 historial, 42 notificaciones
 -- ============================================================
--- Credenciales de prueba:
--- ┌─────────────────────────────────┬──────────────────┬─────────────────┐
--- │ Email                           │ Rol              │ Contraseña      │
--- ├─────────────────────────────────┼──────────────────┼─────────────────┤
--- │ admin@admin.com                 │ ADMIN            │ admin           │
--- │ management@management.com       │ MANAGEMENT       │ management      │
--- │ staff@staff.com                 │ STAFF/TUTOR      │ staff           │
--- │ staff2@staff.com                │ STAFF/TUTOR      │ staff           │
--- │ staff.bedel@staff.com           │ STAFF/BEDEL      │ staff           │
--- │ staff.tech@staff.com            │ STAFF/TECH       │ staff           │
--- │ staff.coord@staff.com           │ STAFF/COORDINATOR│ staff           │
--- │ student@student.com             │ STUDENT          │ student         │
--- │ student2@student.com            │ STUDENT          │ student         │
--- │ student3@student.com            │ STUDENT          │ student         │
--- │ student4@student.com            │ STUDENT          │ student         │
--- │ student5@student.com            │ STUDENT          │ student         │
--- └─────────────────────────────────┴──────────────────┴─────────────────┘
+-- Credenciales de prueba (contraseña: Password123! para todos):
+-- ┌─────────────────────────────────┬──────────────────┐
+-- │ Email                           │ Rol              │
+-- ├─────────────────────────────────┼──────────────────┤
+-- │ admin@admin.com                 │ ADMIN            │
+-- │ management@management.com       │ MANAGEMENT       │
+-- │ staff@staff.com                 │ STAFF/TUTOR      │
+-- │ staff2@staff.com                │ STAFF/TUTOR      │
+-- │ staff.bedel@staff.com           │ STAFF/BEDEL      │
+-- │ staff.tech@staff.com            │ STAFF/TECH       │
+-- │ staff.coord@staff.com           │ STAFF/COORDINATOR│
+-- │ student@student.com             │ STUDENT          │
+-- │ student2@student.com            │ STUDENT          │
+-- │ student3@student.com            │ STUDENT          │
+-- │ student4@student.com            │ STUDENT          │
+-- │ student5@student.com            │ STUDENT          │
+-- └─────────────────────────────────┴──────────────────┘
