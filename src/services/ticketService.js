@@ -6,6 +6,16 @@ const ticketHistoryRepository = require("../repositories/ticketHistoryRepository
 const userRepository = require("../repositories/userRepository");
 const notificationService = require("../services/notificationService");
 
+const STATUS_LABELS = {
+  OPEN: "Abierto",
+  IN_PROGRESS: "En Proceso",
+  WAITING_FOR_STUDENT: "Esperando Estudiante",
+  WAITING_FOR_THIRD_PARTY: "Esperando Terceros",
+  RESOLVED: "Resuelto",
+  CLOSED: "Cerrado",
+  CANCELLED: "Cancelado",
+};
+
 // VALIDATORS
 const { validatePagination } = require("../validators/paginationValidator");
 const {
@@ -219,6 +229,27 @@ const updateTicketStatus = async (id, statusData, userId) => {
     ),
   );
 
+  if (ticket.createdBy) {
+    await notificationService.createNotification({
+      message: `Ticket #${validatedId} cambió estado a ${STATUS_LABELS[validatedStatus] || validatedStatus}`,
+      type: "STATUS_CHANGED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.createdBy.id },
+    });
+  }
+
+  if (
+    ticket.assignedTo &&
+    (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)
+  ) {
+    await notificationService.createNotification({
+      message: `Ticket #${validatedId} cambió estado a ${STATUS_LABELS[validatedStatus] || validatedStatus}`,
+      type: "STATUS_CHANGED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.assignedTo.id },
+    });
+  }
+
   return updatedTicket;
 };
 
@@ -263,24 +294,30 @@ const updateTicketAssignee = async (id, assigneeData, performedById) => {
     ),
   );
 
-  if (ticket.createdBy) {
+  if (ticket.assignedTo && ticket.assignedTo.id !== assignedToId) {
     await notificationService.createNotification({
-      message: `Ticket #${validatedId} cambió estado a ${validatedStatus}`,
-      type: "STATUS_CHANGED",
+      message: `Ticket #${validatedId} fue reasignado correctamente a ${newAssigneeName}`,
+      type: "ASSIGNED_CHANGED",
+      ticket: { id: validatedId },
+      recipient: { id: ticket.assignedTo.id },
+    });
+  }
+
+  if (ticket.createdBy && ticket.createdBy.id !== ticket.assignedTo?.id) {
+    await notificationService.createNotification({
+      message: `Ticket #${validatedId} fue reasignado a ${newAssigneeName}`,
+      type: "ASSIGNED_CHANGED",
       ticket: { id: validatedId },
       recipient: { id: ticket.createdBy.id },
     });
   }
 
-  if (
-    ticket.assignedTo &&
-    (!ticket.createdBy || ticket.assignedTo.id !== ticket.createdBy.id)
-  ) {
+  if (assignedToId !== ticket.createdBy?.id && assignedToId !== ticket.assignedTo?.id) {
     await notificationService.createNotification({
-      message: `Ticket #${validatedId} cambió estado a ${validatedStatus}`,
-      type: "STATUS_CHANGED",
+      message: `Se te asignó el ticket #${validatedId}`,
+      type: "ASSIGNED_CHANGED",
       ticket: { id: validatedId },
-      recipient: { id: ticket.assignedTo.id },
+      recipient: { id: assignedToId },
     });
   }
 

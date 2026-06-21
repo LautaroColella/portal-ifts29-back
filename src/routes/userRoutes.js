@@ -16,7 +16,7 @@ const { authorizeSelfOrAdmin } = require("../middlewares/ownership");
 
 const router = express.Router();
 
-router.get("/", authMiddleware, authorizeRoles("ADMIN"), getAllUsers);
+router.get("/", authMiddleware, authorizeRoles("ADMIN", "STAFF"), getAllUsers);
 router.post("/", authMiddleware, authorizeRoles("ADMIN"), createUser);
 router.patch(
   "/:id/role",
