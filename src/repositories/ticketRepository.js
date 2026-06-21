@@ -12,7 +12,8 @@ const findAll = async (filters) => {
   const query = getRepository()
     .createQueryBuilder("ticket")
     .leftJoinAndSelect("ticket.createdBy", "createdBy")
-    .leftJoinAndSelect("ticket.assignedTo", "assignedTo");
+    .leftJoinAndSelect("ticket.assignedTo", "assignedTo")
+    .loadRelationCountAndMap("ticket.commentsCount", "ticket.comments");
 
   if (title) {
     query.andWhere("LOWER(ticket.title) LIKE LOWER(:title)", {
